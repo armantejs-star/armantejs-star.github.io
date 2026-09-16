@@ -1,72 +1,48 @@
 'use client';
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { CurrencyInput } from '@/components/ui/CurrencyInput';
-import { Slider } from '@/components/ui/Slider';
-import { Accordion } from '@/components/ui/Accordion';
-import { HealthGauge } from '@/components/ui/HealthGauge';
-import { InputSkeleton } from '@/components/ui/Skeleton';
-import { StickyMobileHeader } from '@/components/ui/StickyMobileHeader';
-import { Tooltip } from '@/components/ui/Tooltip';
-import { HelpFAB } from '@/components/ui/HelpFAB';
+import { RefundVisualizer } from '@/components/modules/RefundVisualizer';
+import { SpousalVisaMatrix } from '@/components/modules/SpousalVisaMatrix';
+import { PropertyBuildModule } from '@/components/modules/PropertyBuildModule';
+import { IncomeDepositModule } from '@/components/modules/IncomeDepositModule';
+import { StrategyEngine } from '@/components/modules/StrategyEngine';
+import { useAppStore } from '@/store/useAppStore';
 
 export default function Home() {
-  const [testCash, setTestCash] = useState(350000);
-  const [testSlider, setTestSlider] = useState(12);
+  const { current } = useAppStore();
 
   return (
-    <main className="min-h-screen p-4 md:p-8 pb-32">
-      {/* This will pin to the top on mobile screens */}
-      <StickyMobileHeader totalCashNeeded={testCash} isVisible={true} />
-      
-      <div className="max-w-2xl mx-auto space-y-8 mt-8">
-        <h1 className="text-3xl font-bold text-slate-900">UI Component Test Lab V2</h1>
-        <p className="text-slate-600 flex items-center">
-          Hover this icon to test the Tooltip 
-          <Tooltip text="This is a strict SaaS tooltip for complex property jargon!" />
-        </p>
+    <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32">
+      <div className="max-w-7xl mx-auto space-y-8">
         
-        <Card className="p-6 space-y-8">
-          
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold border-b pb-2">1. Sliders & Gauges</h2>
-            <CurrencyInput label="Test Currency" value={testCash} onChange={setTestCash} />
-            
-            <Slider 
-              label="Visa Wait Time" 
-              value={testSlider} 
-              min={0} max={60} 
-              onChange={setTestSlider} 
-              valueLabel="Months" 
-            />
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">SA Property Strategy Engine</h1>
+          <p className="text-slate-600 mt-2">Adjust your scenario parameters below to see live calculations.</p>
+        </div>
 
-            <div className="pt-4">
-              <HealthGauge 
-                label="Borrowing Capacity (Turns red over $500k)" 
-                currentValue={testCash} 
-                maxValue={500000} 
-              />
+        {/* Two-Column Layout for Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column: Input Modules (Takes up 7/12 of the screen) */}
+          <div className="lg:col-span-7 space-y-6">
+            <SpousalVisaMatrix />
+            <PropertyBuildModule />
+            <IncomeDepositModule />
+            
+            {/* The new Refund Visualizer is added right here! */}
+            <RefundVisualizer />
+            
+          </div>
+
+          {/* Right Column: Live Output Engine (Takes up 5/12 of the screen) */}
+          <div className="lg:col-span-5">
+            {/* The sticky class keeps it pinned to the top as you scroll down */}
+            <div className="sticky top-6">
+              <StrategyEngine />
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold border-b pb-2">2. Animations & Loaders</h2>
-            
-            <Accordion title="Click me to expand" subtitle="Smooth animation test">
-              <div className="space-y-4 p-2 text-slate-600">
-                <p>This content should slide down smoothly. Below is our loading skeleton:</p>
-                <InputSkeleton />
-              </div>
-            </Accordion>
-          </div>
-
-        </Card>
+        </div>
       </div>
-
-      {/* Floating Action Button in the bottom right */}
-      <HelpFAB onClick={() => alert('Help Drawer will open here!')} />
     </main>
   );
 }

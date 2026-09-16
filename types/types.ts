@@ -26,4 +26,8 @@ export interface ScenarioState {
   property: PropertyDetails;
   expectedPRWaitMonths: number;
   visaFailureRisk: boolean;
+  // Newly added financial fields
+  applicant1Income?: number;
+  cashDeposit?: number;
+  annualLivingExpenses?: number;
 }
