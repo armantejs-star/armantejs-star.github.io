@@ -7,16 +7,18 @@ import { PropertyBuildModule } from '@/components/modules/PropertyBuildModule';
 import { IncomeDepositModule } from '@/components/modules/IncomeDepositModule';
 import { StrategyEngine } from '@/components/modules/StrategyEngine';
 import { RepaymentModule } from '@/components/modules/RepaymentModule';
+import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
+import { HelpFAB } from '@/components/ui/HelpFAB';
 import { useAppStore } from '@/store/useAppStore';
 
 export default function Home() {
   const { current } = useAppStore();
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0">
+    <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
         
-        {/* Header Section with the new Export Button */}
+        {/* Header Section */}
         <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 print:flex-row print:mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">SA Property Strategy Engine</h1>
@@ -25,11 +27,10 @@ export default function Home() {
             </p>
           </div>
           
-          {/* The button will hide itself when printing! */}
           <ExportPDFButton />
         </div>
 
-        {/* Two-Column Layout for Desktop */}
+        {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
           
           {/* Left Column: Input Modules */}
@@ -43,7 +44,6 @@ export default function Home() {
 
           {/* Right Column: Live Output Engine */}
           <div className="lg:col-span-5 print:mt-8">
-            {/* The sticky class keeps it pinned to the top as you scroll down */}
             <div className="sticky top-6 print:static">
               <StrategyEngine />
             </div>
@@ -51,6 +51,11 @@ export default function Home() {
 
         </div>
       </div>
+
+      {/* Global Overlays */}
+      <KnowledgeBaseDrawer />
+      <HelpFAB />
+      
     </main>
   );
 }

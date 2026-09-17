@@ -1,24 +1,23 @@
 'use client';
 
 import React from 'react';
-import { HelpCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { MessageCircleQuestion } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
-interface HelpFABProps {
-  onClick: () => void;
-}
+export function HelpFAB() {
+  // Pull the toggle function from our Zustand brain
+  const { toggleHelpDrawer } = useAppStore();
 
-export function HelpFAB({ onClick }: HelpFABProps) {
   return (
-    <button
-      onClick={onClick}
-      className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/50 transition-all duration-200 group"
+    <motion.button
+      onClick={toggleHelpDrawer}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="fixed bottom-6 right-6 p-4 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all z-40 print:hidden flex items-center justify-center"
       aria-label="Open Strategy Guide"
     >
-      <HelpCircle className="w-7 h-7" />
-      {/* Tooltip that appears on hover on Desktop */}
-      <span className="absolute right-full mr-4 bg-slate-900 text-white text-sm font-medium py-1.5 px-3 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-        Strategy Guide & Help
-      </span>
-    </button>
+      <MessageCircleQuestion className="w-6 h-6" />
+    </motion.button>
   );
 }
