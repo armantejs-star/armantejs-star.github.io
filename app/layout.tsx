@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { BetaLock } from "@/components/ui/BetaLock";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Broke Builder",
-  description: "The ultimate property, build, and financial strategy engine.",
+  description: "Comprehensive Property, Construction & Financial Strategy Engine",
   manifest: "/manifest.json",
 };
 
@@ -25,7 +26,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
       <body className={inter.className}>
-        {children}
+        
+        {/* The Vault wrapping the App */}
+        <BetaLock>
+          {children}
+        </BetaLock>
+
         {/* Service Worker Registration */}
         <script
           dangerouslySetInnerHTML={{
