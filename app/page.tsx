@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { ExportPDFButton } from '@/components/modules/ExportPDFButton';
 import { ExportCSVButton } from '@/components/modules/ExportCSVButton';
 import { InstallButton } from '@/components/ui/InstallButton';
@@ -22,6 +23,18 @@ import { HelpTooltip } from '@/components/ui/HelpTooltip';
 
 export default function Home() {
   const { setKnowledgeBaseOpen } = useAppStore();
+  
+  // THE FIX: This makes the app wait until the browser is fully awake
+  const [isAwake, setIsAwake] = useState(false);
+  useEffect(() => {
+    setIsAwake(true);
+  }, []);
+
+  // If it's not awake yet, show a blank background to prevent the crash
+  if (!isAwake) {
+    return <div className="min-h-screen bg-slate-50"></div>;
+  }
+
   return (
     <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
@@ -43,7 +56,6 @@ export default function Home() {
             <span>How To Use</span>
           </button>
           
-          {/* This is where the Install button was added! */}
           <div className="flex gap-3 print:hidden">
             <InstallButton />
             <ExportCSVButton />
@@ -82,4 +94,3 @@ export default function Home() {
     </main>
   );
 }
-
