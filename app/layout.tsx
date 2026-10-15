@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SA Property Strategy Engine",
-  description: "Comprehensive SA Visa and Property Strategy",
+  title: "Broke Builder",
+  description: "The ultimate property, build, and financial strategy engine.",
   manifest: "/manifest.json",
 };
 

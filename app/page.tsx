@@ -25,9 +25,9 @@ export default function Home() {
         {/* Header Section */}
         <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 print:flex-row print:mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">SA Property Strategy Engine</h1>
+            <h1 className="text-3xl font-bold text-slate-900">Broke Builder</h1>
             <p className="text-slate-600 mt-2 print:hidden">
-              Comprehensive SA Visa, Property, and Financial Opportunity Engine
+              Comprehensive Property, Construction & Financial Strategy Engine
             </p>
           </div>
           

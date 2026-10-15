@@ -1,7 +1,7 @@
 {
-  "name": "SA Property Strategy",
-  "short_name": "Property Engine",
-  "description": "Comprehensive SA Visa, Property, and Financial Opportunity Engine",
+  "name": "Broke Builder",
+  "short_name": "Broke Builder",
+  "description": "The ultimate property, build, and financial strategy engine.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
