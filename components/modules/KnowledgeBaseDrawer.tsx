@@ -12,16 +12,15 @@ export function KnowledgeBaseDrawer() {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/60 backdrop-blur-sm transition-opacity">
+      {/* Click outside to close */}
       <div className="absolute inset-0" onClick={() => setKnowledgeBaseOpen(false)} />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
         <div className="w-screen max-w-2xl bg-slate-100 shadow-2xl flex flex-col">
           
-          {/* Drawer Header */}
           <div className="p-6 bg-slate-900 text-white flex justify-between items-center border-b border-slate-800">
             <div>
-              <h2 className="text-xl font-bold">Broke Builder Knowledge Base</h2>
-              <p className="text-xs text-slate-400 mt-1">Full documentation and operating guide</p>
+              <h2 className="text-xl font-bold">Broke Builder Documentation</h2>
             </div>
             <button
               onClick={() => setKnowledgeBaseOpen(false)}
@@ -31,14 +30,12 @@ export function KnowledgeBaseDrawer() {
             </button>
           </div>
 
-          {/* Drawer Content Body */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
             <TutorialGuide />
           </div>
 
-          {/* Drawer Footer */}
           <div className="p-4 bg-white border-t border-slate-200 text-center text-xs text-slate-500 font-medium">
-            Broke Builder Engine v4.0 • SA Property & Strategy Tool
+            Broke Builder Engine v4.0
           </div>
 
         </div>
