@@ -26,8 +26,31 @@ export interface ScenarioState {
   property: PropertyDetails;
   expectedPRWaitMonths: number;
   visaFailureRisk: boolean;
-  // Newly added financial fields
+  
+  // Income & Serviceability
   applicant1Income?: number;
+  applicant2Income?: number; // Newly added
+  monthlyDebts?: number;     // Newly added
   cashDeposit?: number;
   annualLivingExpenses?: number;
+
+  // Advanced Build & Escalation
+  preBuildDelayMonths?: number;
+  builderEscalationPct?: number;
+  contingencyPct?: number;
+  postBuildSetup?: number;
+
+  // Hidden Costs & Fees
+  conveyancingFees?: number;
+  overseasFxMarginPct?: number;
+
+  // Holding Costs (Post-Handover)
+  currentMonthlyRent?: number;
+  councilRatesYearly?: number;
+  insuranceYearly?: number;
+  maintenanceMonthly?: number;
+
+  // Strategy Engine Modifiers
+  propertyGrowthPct?: number;
+  etfReturnPct?: number;
 }

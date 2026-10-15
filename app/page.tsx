@@ -1,19 +1,23 @@
 'use client';
 
 import { ExportPDFButton } from '@/components/modules/ExportPDFButton';
+import { ExportCSVButton } from '@/components/modules/ExportCSVButton';
+import { InstallButton } from '@/components/ui/InstallButton';
 import { RefundVisualizer } from '@/components/modules/RefundVisualizer';
 import { SpousalVisaMatrix } from '@/components/modules/SpousalVisaMatrix';
 import { PropertyBuildModule } from '@/components/modules/PropertyBuildModule';
 import { IncomeDepositModule } from '@/components/modules/IncomeDepositModule';
+import { AdvancedInputsModule } from '@/components/modules/AdvancedInputsModule';
+import { OpportunityCostModule } from '@/components/modules/OpportunityCostModule';
 import { StrategyEngine } from '@/components/modules/StrategyEngine';
 import { RepaymentModule } from '@/components/modules/RepaymentModule';
+import { CapitalAllocationChart } from '@/components/modules/CapitalAllocationChart';
+import { DrawdownTableModule } from '@/components/modules/DrawdownTableModule';
 import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
+import { HealthGauge } from '@/components/modules/HealthGauge';
 import { HelpFAB } from '@/components/ui/HelpFAB';
-import { useAppStore } from '@/store/useAppStore';
 
 export default function Home() {
-  const { current } = useAppStore();
-
   return (
     <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
@@ -23,36 +27,43 @@ export default function Home() {
           <div>
             <h1 className="text-3xl font-bold text-slate-900">SA Property Strategy Engine</h1>
             <p className="text-slate-600 mt-2 print:hidden">
-              Adjust your scenario parameters below to see live calculations.
+              Comprehensive SA Visa, Property, and Financial Opportunity Engine
             </p>
           </div>
           
-          <ExportPDFButton />
+          {/* This is where the Install button was added! */}
+          <div className="flex gap-3 print:hidden">
+            <InstallButton />
+            <ExportCSVButton />
+            <ExportPDFButton />
+          </div>
         </div>
 
         {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
           
-          {/* Left Column: Input Modules */}
+          {/* Left Column: Form Inputs */}
           <div className="lg:col-span-7 space-y-6 print:space-y-4">
             <SpousalVisaMatrix />
             <PropertyBuildModule />
+            <AdvancedInputsModule />
             <IncomeDepositModule />
+            <OpportunityCostModule />
             <RefundVisualizer />
             <RepaymentModule />
           </div>
 
-          {/* Right Column: Live Output Engine */}
-          <div className="lg:col-span-5 print:mt-8">
-            <div className="sticky top-6 print:static">
-              <StrategyEngine />
-            </div>
+          {/* Right Column: Calculations, Charts & Schedules */}
+          <div className="lg:col-span-5 space-y-6 print:mt-8 h-fit">
+            <HealthGauge />
+            <StrategyEngine />
+            <CapitalAllocationChart />
+            <DrawdownTableModule />
           </div>
 
         </div>
       </div>
 
-      {/* Global Overlays */}
       <KnowledgeBaseDrawer />
       <HelpFAB />
       
