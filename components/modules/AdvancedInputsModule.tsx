@@ -3,8 +3,9 @@
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Card } from '@/components/ui/Card';
-import { CurrencyInput } from '@/components/ui/CurrencyInput';
 import { Tooltip } from '@/components/ui/Tooltip';
+import { HelpTooltip } from '@/components/ui/HelpTooltip';
+import { CurrencyInput } from '@/components/ui/CurrencyInput';
 
 export function AdvancedInputsModule() {
   const { current, setAppState } = useAppStore();
@@ -22,8 +23,10 @@ export function AdvancedInputsModule() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1">
+          {/* UPDATED LABEL WITH TOOLTIP */}
+          <label className="text-sm font-medium text-slate-700 flex items-center mb-1">
             Pre-Build Delay (Months)
+            <HelpTooltip text="Months waiting for land to title or council approvals before the slab is poured." />
           </label>
           <input
             type="number"
@@ -34,8 +37,10 @@ export function AdvancedInputsModule() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1">
+          {/* UPDATED LABEL WITH TOOLTIP */}
+          <label className="text-sm font-medium text-slate-700 flex items-center mb-1">
             Builder Price Escalation (%/yr)
+            <HelpTooltip text="The annual inflation rate of construction materials. This compounds over your pre-build delay to show your true final contract price." />
           </label>
           <input
             type="number"
@@ -47,8 +52,10 @@ export function AdvancedInputsModule() {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1">
+          {/* UPDATED LABEL WITH TOOLTIP */}
+          <label className="text-sm font-medium text-slate-700 flex items-center mb-1">
             Contingency Buffer (%)
+            <HelpTooltip text="Extra cash reserve for unexpected site costs, rock removal, or footing upgrades." />
           </label>
           <input
             type="number"

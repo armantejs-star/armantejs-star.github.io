@@ -16,8 +16,12 @@ import { DrawdownTableModule } from '@/components/modules/DrawdownTableModule';
 import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
 import { HelpFAB } from '@/components/ui/HelpFAB';
+import { useAppStore } from '@/store/useAppStore';
+import { BookOpen } from 'lucide-react';
+import { HelpTooltip } from '@/components/ui/HelpTooltip';
 
 export default function Home() {
+  const { setKnowledgeBaseOpen } = useAppStore();
   return (
     <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
@@ -30,6 +34,14 @@ export default function Home() {
               Comprehensive Property, Construction & Financial Strategy Engine
             </p>
           </div>
+
+          <button 
+            onClick={() => setKnowledgeBaseOpen(true)}
+            className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-200 transition-colors shadow-sm"
+          >
+            <BookOpen className="w-5 h-5" />
+            <span>How To Use</span>
+          </button>
           
           {/* This is where the Install button was added! */}
           <div className="flex gap-3 print:hidden">
@@ -70,3 +82,4 @@ export default function Home() {
     </main>
   );
 }
+
