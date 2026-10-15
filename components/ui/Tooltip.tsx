@@ -1,23 +1,48 @@
-import React, { ReactNode } from 'react';
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { HelpCircle } from 'lucide-react';
 
-interface TooltipProps {
-  text: string;
-  children?: ReactNode;
-}
+export function Tooltip({ text }: { text: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
-export function Tooltip({ text, children }: TooltipProps) {
+  // Auto-close when tapping outside on a phone
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative group inline-flex items-center justify-center cursor-help ml-1.5">
-      {/* If no children are passed, it defaults to a standard HelpCircle icon from lucide-react */}
-      {children || <HelpCircle className="w-4 h-4 text-slate-400 hover:text-emerald-500 transition-colors" />}
-      
-      {/* Tooltip Body */}
-      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2.5 bg-slate-900 text-slate-100 text-xs font-medium rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 text-center pointer-events-none leading-relaxed">
-        {text}
-        {/* Tooltip Arrow pointing down */}
-        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
-      </div>
+    <div className="relative inline-flex items-center" ref={tooltipRef}>
+      <button
+        type="button"
+        // THIS is what fixes mobile! It toggles on tap.
+        onClick={(e) => {
+          e.preventDefault();
+          setIsOpen(!isOpen); 
+        }}
+        onMouseEnter={() => setIsOpen(true)}   // Desktop hover
+        onMouseLeave={() => setIsOpen(false)}  // Desktop hover
+        className="text-slate-400 hover:text-emerald-500 focus:outline-none transition-colors"
+      >
+        <HelpCircle className="w-5 h-5" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-50 w-64 p-3 mt-2 text-xs font-normal text-white bg-slate-800 rounded-lg shadow-xl top-full right-0 sm:left-1/2 sm:-translate-x-1/2 leading-relaxed">
+          {text}
+        </div>
+      )}
     </div>
   );
 }
