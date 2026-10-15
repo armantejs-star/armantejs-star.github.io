@@ -44,15 +44,18 @@ const INITIAL_STATE: ScenarioState = {
 interface AppStore {
   current: ScenarioState;
   isHelpDrawerOpen: boolean;
+  isKnowledgeBaseOpen: boolean;
   setAppState: (update: Partial<ScenarioState>) => void;
   resetState: () => void;
   toggleHelpDrawer: () => void;
+  setKnowledgeBaseOpen: (isOpen: boolean) => void;
 }
 
 // 3. The Actual Export that Next.js is looking for!
 export const useAppStore = create<AppStore>((set) => ({
   current: INITIAL_STATE,
-  isHelpDrawerOpen: false, // The drawer starts closed
+  isHelpDrawerOpen: false, 
+  isKnowledgeBaseOpen: false,
   
   setAppState: (update) => 
     set((state) => ({ current: { ...state.current, ...update } })),
@@ -60,4 +63,5 @@ export const useAppStore = create<AppStore>((set) => ({
   resetState: () => set({ current: INITIAL_STATE }),
   
   toggleHelpDrawer: () => set((state) => ({ isHelpDrawerOpen: !state.isHelpDrawerOpen })),
+  setKnowledgeBaseOpen: (isOpen) => set({ isKnowledgeBaseOpen: isOpen }),
 }));
