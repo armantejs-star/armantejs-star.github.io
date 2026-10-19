@@ -55,7 +55,7 @@ export function HealthGauge() {
   let healthColor = "bg-emerald-500";
   let healthBg = "bg-emerald-50 border-emerald-200";
   let healthText = "text-emerald-700";
-  let ratio = maxBorrow > 0 ? targetLoanAmount / maxBorrow : 1.1;
+  const ratio = maxBorrow > 0 ? targetLoanAmount / maxBorrow : 1.1;
 
   if (maxBorrow <= 0 || ratio > 1) {
     healthStatus = maxBorrow <= 0 ? "⚠️ FAIL - Insufficient Income" : `🚫 SHORTFALL - Exceeds limit by $${Math.round(targetLoanAmount - maxBorrow).toLocaleString()}`;
