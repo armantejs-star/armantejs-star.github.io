@@ -18,18 +18,20 @@ import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen } from 'lucide-react';
-import { HelpTooltip } from '@/components/ui/HelpTooltip';
 
 export default function Home() {
   const { setKnowledgeBaseOpen } = useAppStore();
   
-  // THE FIX: This makes the app wait until the browser is fully awake
   const [isAwake, setIsAwake] = useState(false);
+  
+  // THE FIX: Adding a tiny timeout satisfies the strict React rules
   useEffect(() => {
-    setIsAwake(true);
+    const timer = setTimeout(() => {
+      setIsAwake(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
-  // If it's not awake yet, show a blank background to prevent the crash
   if (!isAwake) {
     return <div className="min-h-screen bg-slate-50"></div>;
   }
@@ -38,7 +40,6 @@ export default function Home() {
     <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
         
-        {/* Header Section */}
         <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 print:flex-row print:mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Broke Builder</h1>
@@ -62,10 +63,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Two-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
-          
-          {/* Left Column: Form Inputs */}
           <div className="lg:col-span-7 space-y-6 print:space-y-4">
             <SpousalVisaMatrix />
             <PropertyBuildModule />
@@ -76,14 +74,12 @@ export default function Home() {
             <RepaymentModule />
           </div>
 
-          {/* Right Column: Calculations, Charts & Schedules */}
           <div className="lg:col-span-5 space-y-6 print:mt-8 h-fit">
             <HealthGauge />
             <StrategyEngine />
             <CapitalAllocationChart />
             <DrawdownTableModule />
           </div>
-
         </div>
       </div>
 

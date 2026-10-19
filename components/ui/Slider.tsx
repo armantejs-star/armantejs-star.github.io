@@ -7,39 +7,46 @@ interface SliderProps {
   value: number;
   min: number;
   max: number;
+  step?: number;
   onChange: (value: number) => void;
-  valueLabel?: string; // Optional text to show next to the number, like "Months"
+  valueLabel?: string;
 }
 
-export function Slider({ label, value, min, max, onChange, valueLabel = '' }: SliderProps) {
-  
-  // Calculate the percentage to fill the green track behind the slider thumb
-  const percentage = ((value - min) / (max - min)) * 100;
-
+export function Slider({ 
+  label, 
+  value, 
+  min, 
+  max, 
+  step = 0.1, 
+  onChange, 
+  valueLabel = '' 
+}: SliderProps) {
   return (
-    <div className="flex flex-col space-y-3 w-full">
+    <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <label className="text-sm font-semibold text-slate-700">{label}</label>
-        <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
-          {value} {valueLabel}
-        </span>
+        <label className="text-sm font-medium text-slate-700">{label}</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            value={value}
+            min={min}
+            max={max}
+            step={step}
+            onChange={(e) => onChange(Number(e.target.value))}
+            className="w-20 px-2 py-1 text-right border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900 text-sm shadow-sm"
+          />
+          {valueLabel && <span className="text-sm font-medium text-slate-600">{valueLabel}</span>}
+        </div>
       </div>
-      
       <input
         type="range"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
-        style={{
-          background: `linear-gradient(to right, #10b981 ${percentage}%, #e2e8f0 ${percentage}%)`
-        }}
+        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
       />
-      <div className="flex justify-between text-xs text-slate-400 font-medium px-1">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
     </div>
   );
 }

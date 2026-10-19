@@ -25,7 +25,7 @@ export function RepaymentModule() {
   const targetLoanAmount = Math.max(0, totalFundsRequired - (cashDeposit || 0));
 
   // Local state specifically for this component to slide the interest rate
-  const [interestRate, setInterestRate] = useState(6); // Default 6%
+  const [interestRate, setInterestRate] = useState(6.0); // Default 6.0%
 
   // 2. Standard 30-Year Amortization Math (360 months)
   const monthlyRate = (interestRate / 100) / 12;
@@ -60,6 +60,7 @@ export function RepaymentModule() {
         value={interestRate}
         min={1}
         max={12}
+        step={0.1}
         onChange={(v) => setInterestRate(v)}
         valueLabel="%"
       />

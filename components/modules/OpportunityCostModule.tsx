@@ -22,6 +22,7 @@ export function OpportunityCostModule() {
           value={current.propertyGrowthPct ?? 5.0}
           min={0}
           max={15}
+          step={0.1}
           onChange={(v) => setAppState({ propertyGrowthPct: v })}
           valueLabel="%/yr"
         />
@@ -31,6 +32,7 @@ export function OpportunityCostModule() {
           value={current.etfReturnPct ?? 7.0}
           min={0}
           max={15}
+          step={0.1}
           onChange={(v) => setAppState({ etfReturnPct: v })}
           valueLabel="%/yr"
         />
