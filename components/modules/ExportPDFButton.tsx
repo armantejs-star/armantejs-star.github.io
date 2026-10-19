@@ -44,15 +44,21 @@ export function ExportPDFButton() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = land + totalBuildCost;
 
-  const stampDuty = calculateSaStampDuty(land);
+  // Utilize the new SA FHB status for stamp duty and grants
+  const isSaFhbEligible = (c as unknown as { isSaFhbEligible?: boolean }).isSaFhbEligible || false;
+  const stampDuty = calculateSaStampDuty(land, isSaFhbEligible);
+  const fhbGrant = isSaFhbEligible ? 15000 : 0;
+  
   const surchargeRate = calculateEffectiveSurchargeRate(v);
   const foreignSurcharge = totalPropertyPrice * surchargeRate;
 
   const totalSetupCosts = 
-    (c.conveyancingFees || 0) + (c.postBuildSetup || 0);
+    (c.conveyancingFees || 0) + (c.postBuildSetup || 0) + ((c as unknown as { turnkeyAllowance?: number }).turnkeyAllowance || 0);
   const totalFundsRequired = 
     totalPropertyPrice + stampDuty + foreignSurcharge + totalSetupCosts;
-  const targetLoanAmount = Math.max(0, totalFundsRequired - cashDeposit);
+  
+  // Calculate loan minus deposit and any grants
+  const targetLoanAmount = Math.max(0, totalFundsRequired - cashDeposit - fhbGrant);
 
   const monthlyRate = (6.0 / 100) / 12;
   const baselineRepayment = targetLoanAmount > 0 
@@ -64,32 +70,25 @@ export function ExportPDFButton() {
 
   const advice: string[] = [];
 
+  if (isSaFhbEligible) {
+    advice.push(
+      `First Home Advantage: By building new in SA, you are saving on Stamp Duty and utilizing the $15,000 grant, drastically improving your cash position.`
+    );
+  }
+
   if (lvr > 80) {
     advice.push(
-      `LMI Warning: Your estimated LVR is ${lvr.toFixed(1)}%. ` +
-      `Because it is over 80%, you will likely need to pay LMI. ` +
-      `Consider increasing your deposit to avoid this.`
+      `LMI Warning: Your estimated LVR is ${lvr.toFixed(1)}%. Because it is over 80%, you will likely need to pay LMI. Consider increasing your deposit.`
     );
   } else if (lvr > 0) {
     advice.push(
-      `Healthy LVR: Your LVR is ${lvr.toFixed(1)}%, meaning ` +
-      `you comfortably avoid Lenders Mortgage Insurance (LMI).`
+      `Healthy LVR: Your LVR is ${lvr.toFixed(1)}%, meaning you comfortably avoid Lenders Mortgage Insurance (LMI).`
     );
   }
 
   if (foreignSurcharge > 0) {
     advice.push(
-      `Surcharge Exposure: Your visa status triggers a ` +
-      `${(surchargeRate * 100).toFixed(1)}% foreign buyer surcharge ` +
-      `($${foreignSurcharge.toLocaleString()}).`
-    );
-  }
-
-  if ((c.preBuildDelayMonths || 0) > 6) {
-    const rentLoss = (c.currentMonthlyRent || 0) * (c.preBuildDelayMonths || 0);
-    advice.push(
-      `High Holding Costs: A ${c.preBuildDelayMonths}-month delay ` +
-      `costs approx $${rentLoss.toLocaleString()} in dead rent.`
+      `Surcharge Exposure: Your visa status triggers a ${(surchargeRate * 100).toFixed(1)}% foreign buyer surcharge ($${foreignSurcharge.toLocaleString()}).`
     );
   }
 
@@ -101,6 +100,8 @@ export function ExportPDFButton() {
             @media print {
               main { display: none !important; }
               body { background-color: white !important; }
+              /* Force background colors to print for charts and tables */
+              * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
               @page { margin: 10mm; size: A4 portrait; }
               .avoid-break { page-break-inside: avoid; }
             }
@@ -128,26 +129,26 @@ export function ExportPDFButton() {
           Total Capital Allocation Visualizer
         </h3>
         
-        <div className="w-full h-8 flex rounded overflow-hidden shadow-inner mb-3">
+        <div className="w-full h-8 flex rounded overflow-hidden shadow-inner mb-3 bg-slate-200">
           <div 
             style={{ width: `${(land / (totalFundsRequired || 1)) * 100}%` }} 
-            className="bg-sky-600 border-r border-white/20" 
+            className="bg-sky-600 border-r border-white/20 h-full" 
           />
           <div 
             style={{ width: `${(totalBuildCost / (totalFundsRequired || 1)) * 100}%` }} 
-            className="bg-emerald-500 border-r border-white/20" 
+            className="bg-emerald-500 border-r border-white/20 h-full" 
           />
           <div 
             style={{ width: `${(stampDuty / (totalFundsRequired || 1)) * 100}%` }} 
-            className="bg-amber-500 border-r border-white/20" 
+            className="bg-amber-500 border-r border-white/20 h-full" 
           />
           <div 
             style={{ width: `${(foreignSurcharge / (totalFundsRequired || 1)) * 100}%` }} 
-            className="bg-red-500 border-r border-white/20" 
+            className="bg-red-500 border-r border-white/20 h-full" 
           />
           <div 
             style={{ width: `${(totalSetupCosts / (totalFundsRequired || 1)) * 100}%` }} 
-            className="bg-slate-500" 
+            className="bg-slate-500 h-full" 
           />
         </div>
         
@@ -213,8 +214,8 @@ export function ExportPDFButton() {
       </h3>
       
       <div className="grid grid-cols-2 gap-x-6 gap-y-4 avoid-break text-xs">
-        <div>
-          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+        <div className="bg-white p-3 rounded border border-slate-200">
+          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-2">
             Profile & Math
           </h4>
           <table className="w-full">
@@ -231,6 +232,12 @@ export function ExportPDFButton() {
                 <td className="py-1 text-slate-600">Cash Deposit</td>
                 <td className="py-1 font-bold text-right text-emerald-600">${cashDeposit.toLocaleString()}</td>
               </tr>
+              {fhbGrant > 0 && (
+                <tr className="border-b border-slate-100">
+                  <td className="py-1 text-slate-600">SA FHB Grant</td>
+                  <td className="py-1 font-bold text-right text-emerald-600">${fhbGrant.toLocaleString()}</td>
+                </tr>
+              )}
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Est. Repayment (6%)</td>
                 <td className="py-1 font-bold text-right">${Math.round(baselineRepayment).toLocaleString()} /mo</td>
@@ -239,8 +246,8 @@ export function ExportPDFButton() {
           </table>
         </div>
 
-        <div>
-          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+        <div className="bg-white p-3 rounded border border-slate-200">
+          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-2">
             Build Breakdown
           </h4>
           <table className="w-full">
@@ -257,6 +264,10 @@ export function ExportPDFButton() {
                 <td className="py-1 text-slate-600">Site Works</td>
                 <td className="py-1 font-bold text-right">${site.toLocaleString()}</td>
               </tr>
+              <tr className="border-b border-slate-100">
+                <td className="py-1 text-slate-600">Soil/Risk Buffer</td>
+                <td className="py-1 font-bold text-right">${soilBuffer.toLocaleString()}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -272,6 +283,7 @@ export function ExportPDFButton() {
             @media print {
               main { display: none !important; }
               body { background-color: white !important; }
+              * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
               @page { margin: 10mm; size: A4 portrait; }
               .avoid-break { page-break-inside: avoid; }
             }
