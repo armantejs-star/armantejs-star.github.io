@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { FileText } from 'lucide-react';
+import { FileText, FileCheck } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { getSoilBuffer } from '@/constants/soil';
 import { calculateSaStampDuty } from '@/lib/math/stampDuty';
@@ -10,6 +10,7 @@ import { calculateEffectiveSurchargeRate } from '@/lib/math/mixedVisa';
 
 export function ExportPDFButton() {
   const [mounted, setMounted] = useState(false);
+  const [printMode, setPrintMode] = useState<'dossier' | 'terms' | null>(null);
   const { current } = useAppStore();
 
   useEffect(() => {
@@ -19,11 +20,17 @@ export function ExportPDFButton() {
     return () => clearTimeout(timer);
   }, []);
 
+  const handlePrint = (mode: 'dossier' | 'terms') => {
+    setPrintMode(mode);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
   const c = current || {};
   const p = c.property || {};
   const v = c.visaStatus || {};
 
-  // FIX: Replaced 'any' with strict unknown casting to satisfy ESLint
   const clientName = (c as unknown as { clientName?: string }).clientName?.trim() || 'Valued Client';
   const land = p.landPrice || 0;
   const build = p.buildPrice || 0;
@@ -86,7 +93,7 @@ export function ExportPDFButton() {
     );
   }
 
-  const dossierContent = (
+  const dossierOnlyContent = (
     <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-50 p-8 font-sans text-slate-900 leading-snug">
       <style 
         dangerouslySetInnerHTML={{
@@ -95,7 +102,6 @@ export function ExportPDFButton() {
               main { display: none !important; }
               body { background-color: white !important; }
               @page { margin: 10mm; size: A4 portrait; }
-              .page-break { page-break-before: always; }
               .avoid-break { page-break-inside: avoid; }
             }
           `
@@ -255,93 +261,117 @@ export function ExportPDFButton() {
           </table>
         </div>
       </div>
+    </div>
+  );
 
-      {/* ================= PAGE 2: TERMS AND CONDITIONS ================= */}
-      <div className="page-break pt-6">
-        <div className="border-b-2 border-slate-900 pb-3 mb-4 flex justify-between items-end">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 uppercase">
-              Terms & Conditions of Consultation Services
-            </h2>
-            <p className="text-xs text-slate-600">
-              Prepared for: <span className="font-bold text-slate-900">{clientName}</span>
-            </p>
-          </div>
-          <p className="text-xs text-slate-400">Page 2 of 2</p>
-        </div>
+  const termsOnlyContent = (
+    <div className="hidden print:block absolute top-0 left-0 w-full bg-white z-50 p-8 font-sans text-slate-900 leading-snug">
+      <style 
+        dangerouslySetInnerHTML={{
+          __html: `
+            @media print {
+              main { display: none !important; }
+              body { background-color: white !important; }
+              @page { margin: 10mm; size: A4 portrait; }
+              .avoid-break { page-break-inside: avoid; }
+            }
+          `
+        }} 
+      />
 
-        <div className="space-y-3 text-[10px] text-slate-700 leading-normal">
-          <div>
-            <h4 className="font-bold text-slate-900">1. INTRODUCTION AND ACCEPTANCE OF TERMS</h4>
-            <p>These Terms govern property strategy and consultation services provided by Mantej Singh (&quot;Consultant&quot;). By engaging our Services, paying consultation fees, or receiving documentation, you (&quot;Client&quot;) agree to these Terms in full.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">2. STRICTLY NO FINANCIAL, LEGAL, OR TAX ADVICE</h4>
-            <p>Services are strictly for educational and general strategic purposes. The Consultant is not a licensed financial advisor, mortgage broker, conveyancer, accountant, or legal practitioner. Figures provided do not constitute personal financial advice.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">3. NATURE OF SERVICES AND LIMITATIONS OF ESTIMATIONS</h4>
-            <p>Services utilize analytical models based on generalized assumptions of the South Australian property market. All figures (including build costs, site works, and soil buffers) are estimations only and do not constitute fixed quotes or binding contracts.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">4. TIME-SENSITIVITY OF DOSSIERS AND MARKET VOLATILITY</h4>
-            <p>Estimations represent a snapshot in time based on market conditions on the date of generation. Cost, interest rate, and legislation metrics are subject to change without notice.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">5. CLIENT OBLIGATIONS AND ACCURACY OF DATA</h4>
-            <p>Estimations rely on the accuracy of Client-provided information. The Consultant does not independently audit Client data. Clients agree to seek verification from licensed brokers, conveyancers, and accountants before executing contracts.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">6. SCOPE OF ENGAGEMENT & FEES</h4>
-            <p>Payment entitles the Client strictly to the agreed consultation session and one (1) Strategy Dossier. Subsequent requests for updates or re-evaluations constitute a new engagement. Fees are non-refundable once modeling is delivered.</p>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-slate-900">7. CONFIDENTIALITY AND LIMITATION OF LIABILITY</h4>
-            <p>Client data is kept strictly confidential. To the maximum extent permitted by Australian law, the Consultant shall not be liable for direct or indirect losses, loan rejections, or increased construction costs arising from reliance on the consultation.</p>
-          </div>
-        </div>
-
-        {/* CLIENT ACKNOWLEDGMENT & SIGNATURE BLOCK */}
-        <div className="mt-6 border-2 border-slate-900 p-4 rounded-xl bg-slate-50 avoid-break">
-          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
-            Client Acknowledgment & Declaration
-          </h4>
-          <p className="text-[10px] text-slate-600 mb-4">
-            By signing below or replying via email accepting this dossier, I, <strong className="text-slate-900">{clientName}</strong>, confirm that I have read, understood, and agreed to the Terms and Conditions above. I acknowledge that Mantej Singh is providing general property estimations and is not a licensed financial advisor.
+      <div className="border-b-2 border-slate-900 pb-3 mb-4 flex justify-between items-end">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 uppercase">
+            Terms & Conditions of Consultation Services
+          </h2>
+          <p className="text-xs text-slate-600 mt-1">
+            Prepared for: <span className="font-bold text-slate-900">{clientName}</span>
           </p>
+        </div>
+        <p className="text-xs text-slate-400 font-medium">
+          Date: {new Date().toLocaleDateString('en-AU')}
+        </p>
+      </div>
 
-          <div className="grid grid-cols-2 gap-6 pt-2 border-t border-slate-300">
-            <div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase">Client Signature</p>
-              <div className="h-8 border-b border-slate-400 mt-1"></div>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold text-slate-500 uppercase">Date</p>
-              <div className="h-8 border-b border-slate-400 mt-1"></div>
-            </div>
-          </div>
+      <div className="space-y-3 text-[10px] text-slate-700 leading-normal">
+        <div>
+          <h4 className="font-bold text-slate-900">1. INTRODUCTION AND ACCEPTANCE OF TERMS</h4>
+          <p>These Terms govern property strategy and consultation services provided by Mantej Singh (&quot;Consultant&quot;). By engaging our Services, paying consultation fees, or receiving documentation, you (&quot;Client&quot;) agree to these Terms in full.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">2. STRICTLY NO FINANCIAL, LEGAL, OR TAX ADVICE</h4>
+          <p>Services are strictly for educational and general strategic purposes. The Consultant is not a licensed financial advisor, mortgage broker, conveyancer, accountant, or legal practitioner. Figures provided do not constitute personal financial advice.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">3. NATURE OF SERVICES AND LIMITATIONS OF ESTIMATIONS</h4>
+          <p>Services utilize analytical models based on generalized assumptions of the South Australian property market. All figures (including build costs, site works, and soil buffers) are estimations only and do not constitute fixed quotes or binding contracts.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">4. TIME-SENSITIVITY OF DOSSIERS AND MARKET VOLATILITY</h4>
+          <p>Estimations represent a snapshot in time based on market conditions on the date of generation. Cost, interest rate, and legislation metrics are subject to change without notice.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">5. CLIENT OBLIGATIONS AND ACCURACY OF DATA</h4>
+          <p>Estimations rely on the accuracy of Client-provided information. The Consultant does not independently audit Client data. Clients agree to seek verification from licensed brokers, conveyancers, and accountants before executing contracts.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">6. SCOPE OF ENGAGEMENT & FEES</h4>
+          <p>Payment entitles the Client strictly to the agreed consultation session and one (1) Strategy Dossier. Subsequent requests for updates or re-evaluations constitute a new engagement. Fees are non-refundable once modeling is delivered.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">7. CONFIDENTIALITY AND LIMITATION OF LIABILITY</h4>
+          <p>Client data is kept strictly confidential. To the maximum extent permitted by Australian law, the Consultant shall not be liable for direct or indirect losses, loan rejections, or increased construction costs arising from reliance on the consultation.</p>
         </div>
       </div>
 
+      <div className="mt-8 border-2 border-slate-900 p-4 rounded-xl bg-slate-50 avoid-break">
+        <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
+          Client Acknowledgment & Declaration
+        </h4>
+        <p className="text-[10px] text-slate-600 mb-4">
+          By signing below or replying via email accepting this agreement, I, <strong className="text-slate-900">{clientName}</strong>, confirm that I have read, understood, and agreed to the Terms and Conditions above. I acknowledge that Mantej Singh is providing general property estimations and is not a licensed financial advisor.
+        </p>
+
+        <div className="grid grid-cols-2 gap-6 pt-2 border-t border-slate-300">
+          <div>
+            <p className="text-[9px] font-bold text-slate-500 uppercase">Client Signature</p>
+            <div className="h-8 border-b border-slate-400 mt-1"></div>
+          </div>
+          <div>
+            <p className="text-[9px] font-bold text-slate-500 uppercase">Date</p>
+            <div className="h-8 border-b border-slate-400 mt-1"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 
   return (
-    <>
+    <div className="flex gap-2 print:hidden">
       <button
-        onClick={() => window.print()}
-        className="flex items-center space-x-2 bg-slate-900 border border-slate-800 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-slate-800 print:hidden"
+        onClick={() => handlePrint('dossier')}
+        className="flex items-center space-x-2 bg-slate-900 border border-slate-800 text-white px-3 py-2 rounded-lg shadow-sm hover:bg-slate-800 transition-colors"
       >
         <FileText className="w-4 h-4" />
-        <span className="font-semibold text-sm">Download Dossier</span>
+        <span className="font-semibold text-xs md:text-sm">Download Dossier</span>
       </button>
-      {mounted && createPortal(dossierContent, document.body)}
-    </>
+
+      <button
+        onClick={() => handlePrint('terms')}
+        className="flex items-center space-x-2 bg-slate-100 border border-slate-300 text-slate-800 px-3 py-2 rounded-lg shadow-sm hover:bg-slate-200 transition-colors"
+      >
+        <FileCheck className="w-4 h-4 text-emerald-600" />
+        <span className="font-semibold text-xs md:text-sm">Download T&amp;C</span>
+      </button>
+
+      {mounted && printMode === 'dossier' && createPortal(dossierOnlyContent, document.body)}
+      {mounted && printMode === 'terms' && createPortal(termsOnlyContent, document.body)}
+    </div>
   );
 }
