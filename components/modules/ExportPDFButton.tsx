@@ -23,6 +23,8 @@ export function ExportPDFButton() {
   const p = c.property || {};
   const v = c.visaStatus || {};
 
+  // FIX: Replaced 'any' with strict unknown casting to satisfy ESLint
+  const clientName = (c as unknown as { clientName?: string }).clientName?.trim() || 'Valued Client';
   const land = p.landPrice || 0;
   const build = p.buildPrice || 0;
   const site = p.siteWorks || 0;
@@ -93,6 +95,7 @@ export function ExportPDFButton() {
               main { display: none !important; }
               body { background-color: white !important; }
               @page { margin: 10mm; size: A4 portrait; }
+              .page-break { page-break-before: always; }
               .avoid-break { page-break-inside: avoid; }
             }
           `
@@ -101,97 +104,97 @@ export function ExportPDFButton() {
 
       <div className="border-b-4 border-slate-900 pb-4 mb-6 flex justify-between items-end avoid-break">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">
-            Broke Builder
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">
+            Property Strategy Dossier
           </h1>
-          <h2 className="text-xl text-slate-500 font-semibold mt-1">
-            Strategy & Data Dossier
-          </h2>
+          <p className="text-sm font-bold text-emerald-700 mt-1">
+            Prepared for: {clientName}
+          </p>
+        </div>
+        <div className="text-right text-xs text-slate-500 font-medium">
+          <p>Date: {new Date().toLocaleDateString('en-AU')}</p>
+          <p>Consultation Document</p>
         </div>
       </div>
 
-      <div className="mb-8 avoid-break border border-slate-200 p-5 rounded-xl bg-slate-50">
-        <h3 className="text-sm uppercase tracking-widest font-bold text-slate-800 mb-4">
-          Total Capital Allocation
+      <div className="mb-6 avoid-break border border-slate-200 p-5 rounded-xl bg-slate-50">
+        <h3 className="text-xs uppercase tracking-widest font-bold text-slate-800 mb-3">
+          Total Capital Allocation Visualizer
         </h3>
         
         <div className="w-full h-8 flex rounded overflow-hidden shadow-inner mb-3">
           <div 
-            style={{ width: `${(land / totalFundsRequired) * 100}%` }} 
+            style={{ width: `${(land / (totalFundsRequired || 1)) * 100}%` }} 
             className="bg-sky-600 border-r border-white/20" 
           />
           <div 
-            style={{ width: `${(totalBuildCost / totalFundsRequired) * 100}%` }} 
+            style={{ width: `${(totalBuildCost / (totalFundsRequired || 1)) * 100}%` }} 
             className="bg-emerald-500 border-r border-white/20" 
           />
           <div 
-            style={{ width: `${(stampDuty / totalFundsRequired) * 100}%` }} 
+            style={{ width: `${(stampDuty / (totalFundsRequired || 1)) * 100}%` }} 
             className="bg-amber-500 border-r border-white/20" 
           />
           <div 
-            style={{ width: `${(foreignSurcharge / totalFundsRequired) * 100}%` }} 
+            style={{ width: `${(foreignSurcharge / (totalFundsRequired || 1)) * 100}%` }} 
             className="bg-red-500 border-r border-white/20" 
           />
           <div 
-            style={{ width: `${(totalSetupCosts / totalFundsRequired) * 100}%` }} 
+            style={{ width: `${(totalSetupCosts / (totalFundsRequired || 1)) * 100}%` }} 
             className="bg-slate-500" 
           />
         </div>
         
-        <div className="flex justify-between text-xs font-bold text-slate-600 uppercase">
+        <div className="flex justify-between text-[10px] font-bold text-slate-600 uppercase">
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-sky-600 rounded-sm" /> 
-            Land
+            <div className="w-2.5 h-2.5 bg-sky-600 rounded-sm" /> Land
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-emerald-500 rounded-sm" /> 
-            Build
+            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-sm" /> Build
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-amber-500 rounded-sm" /> 
-            Duty
+            <div className="w-2.5 h-2.5 bg-amber-500 rounded-sm" /> Duty
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-slate-500 rounded-sm" /> 
-            Fees
+            <div className="w-2.5 h-2.5 bg-slate-500 rounded-sm" /> Fees
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-8 avoid-break">
-        <div className="border border-slate-200 p-4 rounded-xl text-center bg-white">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">
+      <div className="grid grid-cols-3 gap-4 mb-6 avoid-break">
+        <div className="border border-slate-200 p-3 rounded-xl text-center bg-white">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
             Property Value
           </p>
-          <p className="text-2xl font-black text-slate-900">
+          <p className="text-xl font-black text-slate-900">
             ${totalPropertyPrice.toLocaleString()}
           </p>
         </div>
-        <div className="border border-slate-200 p-4 rounded-xl text-center bg-white">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">
+        <div className="border border-slate-200 p-3 rounded-xl text-center bg-white">
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
             Cash Required
           </p>
-          <p className="text-2xl font-black text-slate-900">
+          <p className="text-xl font-black text-slate-900">
             ${totalFundsRequired.toLocaleString()}
           </p>
         </div>
-        <div className="border border-emerald-200 p-4 rounded-xl text-center bg-emerald-50">
-          <p className="text-xs font-bold text-emerald-700 uppercase tracking-widest mb-1">
+        <div className="border border-emerald-200 p-3 rounded-xl text-center bg-emerald-50">
+          <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest mb-1">
             Target Loan
           </p>
-          <p className="text-2xl font-black text-emerald-600">
+          <p className="text-xl font-black text-emerald-600">
             ${targetLoanAmount.toLocaleString()}
           </p>
         </div>
       </div>
 
-      <div className="mb-8 avoid-break border-l-4 border-emerald-500 bg-slate-50 p-5 rounded-r-xl">
-        <h3 className="text-sm uppercase tracking-widest font-bold text-slate-800 mb-3">
-          AI Strategic Advice
+      <div className="mb-6 avoid-break border-l-4 border-emerald-500 bg-slate-50 p-4 rounded-r-xl">
+        <h3 className="text-xs uppercase tracking-widest font-bold text-slate-800 mb-2">
+          Strategic Inferences & Notes
         </h3>
-        <ul className="space-y-3">
+        <ul className="space-y-2">
           {advice.map((tip, i) => (
-            <li key={i} className="text-sm text-slate-700 flex items-start">
+            <li key={i} className="text-xs text-slate-700 flex items-start">
               <span className="mr-2 text-emerald-500 font-bold">→</span> 
               {tip}
             </li>
@@ -199,73 +202,133 @@ export function ExportPDFButton() {
         </ul>
       </div>
 
-      <h3 className="text-sm uppercase tracking-widest font-bold text-slate-800 mb-4 border-b border-slate-200 pb-2">
-        Complete Data Dump
+      <h3 className="text-xs uppercase tracking-widest font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">
+        Parameters Breakdown
       </h3>
       
-      <div className="grid grid-cols-2 gap-x-8 gap-y-6 avoid-break">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-4 avoid-break text-xs">
         <div>
-          <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-2">
+          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-1">
             Profile & Math
           </h4>
-          <table className="w-full text-xs">
+          <table className="w-full">
             <tbody>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Visa Status</td>
-                <td className="py-1 font-bold text-right">
-                  {v.applicant1?.visa || 'N/A'}
-                </td>
+                <td className="py-1 font-bold text-right">{v.applicant1?.visa || 'N/A'}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Combined Income</td>
-                <td className="py-1 font-bold text-right">
-                  ${combinedIncome.toLocaleString()}
-                </td>
+                <td className="py-1 font-bold text-right">${combinedIncome.toLocaleString()}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Cash Deposit</td>
-                <td className="py-1 font-bold text-right text-emerald-600">
-                  ${cashDeposit.toLocaleString()}
-                </td>
+                <td className="py-1 font-bold text-right text-emerald-600">${cashDeposit.toLocaleString()}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Est. Repayment (6%)</td>
-                <td className="py-1 font-bold text-right">
-                  ${Math.round(baselineRepayment).toLocaleString()} /mo
-                </td>
+                <td className="py-1 font-bold text-right">${Math.round(baselineRepayment).toLocaleString()} /mo</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <div>
-          <h4 className="font-bold text-xs text-slate-400 uppercase tracking-wider mb-2">
+          <h4 className="font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-1">
             Build Breakdown
           </h4>
-          <table className="w-full text-xs">
+          <table className="w-full">
             <tbody>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Land Price</td>
-                <td className="py-1 font-bold text-right">
-                  ${land.toLocaleString()}
-                </td>
+                <td className="py-1 font-bold text-right">${land.toLocaleString()}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Base Build</td>
-                <td className="py-1 font-bold text-right">
-                  ${build.toLocaleString()}
-                </td>
+                <td className="py-1 font-bold text-right">${build.toLocaleString()}</td>
               </tr>
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">Site Works</td>
-                <td className="py-1 font-bold text-right">
-                  ${site.toLocaleString()}
-                </td>
+                <td className="py-1 font-bold text-right">${site.toLocaleString()}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* ================= PAGE 2: TERMS AND CONDITIONS ================= */}
+      <div className="page-break pt-6">
+        <div className="border-b-2 border-slate-900 pb-3 mb-4 flex justify-between items-end">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 uppercase">
+              Terms & Conditions of Consultation Services
+            </h2>
+            <p className="text-xs text-slate-600">
+              Prepared for: <span className="font-bold text-slate-900">{clientName}</span>
+            </p>
+          </div>
+          <p className="text-xs text-slate-400">Page 2 of 2</p>
+        </div>
+
+        <div className="space-y-3 text-[10px] text-slate-700 leading-normal">
+          <div>
+            <h4 className="font-bold text-slate-900">1. INTRODUCTION AND ACCEPTANCE OF TERMS</h4>
+            <p>These Terms govern property strategy and consultation services provided by Mantej Singh (&quot;Consultant&quot;). By engaging our Services, paying consultation fees, or receiving documentation, you (&quot;Client&quot;) agree to these Terms in full.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">2. STRICTLY NO FINANCIAL, LEGAL, OR TAX ADVICE</h4>
+            <p>Services are strictly for educational and general strategic purposes. The Consultant is not a licensed financial advisor, mortgage broker, conveyancer, accountant, or legal practitioner. Figures provided do not constitute personal financial advice.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">3. NATURE OF SERVICES AND LIMITATIONS OF ESTIMATIONS</h4>
+            <p>Services utilize analytical models based on generalized assumptions of the South Australian property market. All figures (including build costs, site works, and soil buffers) are estimations only and do not constitute fixed quotes or binding contracts.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">4. TIME-SENSITIVITY OF DOSSIERS AND MARKET VOLATILITY</h4>
+            <p>Estimations represent a snapshot in time based on market conditions on the date of generation. Cost, interest rate, and legislation metrics are subject to change without notice.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">5. CLIENT OBLIGATIONS AND ACCURACY OF DATA</h4>
+            <p>Estimations rely on the accuracy of Client-provided information. The Consultant does not independently audit Client data. Clients agree to seek verification from licensed brokers, conveyancers, and accountants before executing contracts.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">6. SCOPE OF ENGAGEMENT & FEES</h4>
+            <p>Payment entitles the Client strictly to the agreed consultation session and one (1) Strategy Dossier. Subsequent requests for updates or re-evaluations constitute a new engagement. Fees are non-refundable once modeling is delivered.</p>
+          </div>
+
+          <div>
+            <h4 className="font-bold text-slate-900">7. CONFIDENTIALITY AND LIMITATION OF LIABILITY</h4>
+            <p>Client data is kept strictly confidential. To the maximum extent permitted by Australian law, the Consultant shall not be liable for direct or indirect losses, loan rejections, or increased construction costs arising from reliance on the consultation.</p>
+          </div>
+        </div>
+
+        {/* CLIENT ACKNOWLEDGMENT & SIGNATURE BLOCK */}
+        <div className="mt-6 border-2 border-slate-900 p-4 rounded-xl bg-slate-50 avoid-break">
+          <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
+            Client Acknowledgment & Declaration
+          </h4>
+          <p className="text-[10px] text-slate-600 mb-4">
+            By signing below or replying via email accepting this dossier, I, <strong className="text-slate-900">{clientName}</strong>, confirm that I have read, understood, and agreed to the Terms and Conditions above. I acknowledge that Mantej Singh is providing general property estimations and is not a licensed financial advisor.
+          </p>
+
+          <div className="grid grid-cols-2 gap-6 pt-2 border-t border-slate-300">
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 uppercase">Client Signature</p>
+              <div className="h-8 border-b border-slate-400 mt-1"></div>
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 uppercase">Date</p>
+              <div className="h-8 border-b border-slate-400 mt-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 
