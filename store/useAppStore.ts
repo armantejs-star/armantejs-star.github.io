@@ -1,8 +1,15 @@
 import { create } from 'zustand';
 import { ScenarioState } from '@/types/types';
 
-// 1. The Default Baselines
-const INITIAL_STATE: ScenarioState = {
+// We formally extend your existing dictionary with the new consulting features
+export type AppState = ScenarioState & {
+  clientName: string;
+  isSaFhbEligible: boolean;
+  buildDurationMonths: number;
+  turnkeyAllowance: number;
+};
+
+const INITIAL_STATE: AppState = {
   visaStatus: {
     applicant1: { visa: "491", isFirstHomeBuyer: true },
     isJointPurchase: false,
@@ -17,7 +24,6 @@ const INITIAL_STATE: ScenarioState = {
   expectedPRWaitMonths: 12,
   visaFailureRisk: false,
   
-  // Advanced Default Baselines
   applicant1Income: 80000,
   applicant2Income: 40000,
   monthlyDebts: 500,
@@ -38,20 +44,24 @@ const INITIAL_STATE: ScenarioState = {
   
   propertyGrowthPct: 5.0,
   etfReturnPct: 7.0,
+
+  // --- NEW CONSULTING FEATURES ---
+  clientName: '',
+  isSaFhbEligible: false,
+  buildDurationMonths: 9,
+  turnkeyAllowance: 15000,
 };
 
-// 2. The Type Definitions for our State
 interface AppStore {
-  current: ScenarioState;
+  current: AppState;
   isHelpDrawerOpen: boolean;
   isKnowledgeBaseOpen: boolean;
-  setAppState: (update: Partial<ScenarioState>) => void;
+  setAppState: (update: Partial<AppState>) => void;
   resetState: () => void;
   toggleHelpDrawer: () => void;
   setKnowledgeBaseOpen: (isOpen: boolean) => void;
 }
 
-// 3. The Actual Export that Next.js is looking for!
 export const useAppStore = create<AppStore>((set) => ({
   current: INITIAL_STATE,
   isHelpDrawerOpen: false, 

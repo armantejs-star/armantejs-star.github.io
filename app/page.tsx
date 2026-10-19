@@ -18,6 +18,7 @@ import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen } from 'lucide-react';
+import { ConstructionStressModule } from '@/components/modules/ConstructionStressModule';
 
 export default function Home() {
   const { setKnowledgeBaseOpen } = useAppStore();
@@ -67,6 +68,7 @@ export default function Home() {
           <div className="lg:col-span-7 space-y-6 print:space-y-4">
             <SpousalVisaMatrix />
             <PropertyBuildModule />
+            <ConstructionStressModule/>
             <AdvancedInputsModule />
             <IncomeDepositModule />
             <OpportunityCostModule />
