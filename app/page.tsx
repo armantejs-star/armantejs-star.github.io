@@ -16,7 +16,6 @@ import { CapitalAllocationChart } from '@/components/modules/CapitalAllocationCh
 import { DrawdownTableModule } from '@/components/modules/DrawdownTableModule';
 import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
-import { HelpFAB } from '@/components/ui/HelpFAB';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen } from 'lucide-react';
 import { HelpTooltip } from '@/components/ui/HelpTooltip';
@@ -89,8 +88,6 @@ export default function Home() {
       </div>
 
       <KnowledgeBaseDrawer />
-      <HelpFAB />
-      
     </main>
   );
 }
