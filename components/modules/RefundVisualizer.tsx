@@ -44,7 +44,7 @@ export function RefundVisualizer() {
         label="Expected PR Grant (Wait Time)"
         value={expectedPRWaitMonths}
         min={0}
-        max={36}
+        max={120}
         onChange={(v) => setAppState({ expectedPRWaitMonths: v })}
         valueLabel="Months"
       />
