@@ -1,121 +1,170 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  BookOpen, 
-  Home, 
-  TrendingUp, 
-  DollarSign, 
-  Scale, 
-  PieChart, 
-  Download, 
-  ChevronDown, 
-  ChevronRight,
-  HelpCircle
-} from 'lucide-react';
-
-interface GuideSectionProps {
-  title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
-  isOpenDefault?: boolean;
-}
-
-function GuideSection({ title, icon, children, isOpenDefault = false }: GuideSectionProps) {
-  const [isOpen, setIsOpen] = useState(isOpenDefault);
-
-  return (
-    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm transition-all mb-4">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
-      >
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-slate-900 text-white rounded-lg">{icon}</div>
-          <h3 className="font-bold text-slate-900 text-base">{title}</h3>
-        </div>
-        {isOpen ? <ChevronDown className="w-5 h-5 text-slate-500" /> : <ChevronRight className="w-5 h-5 text-slate-500" />}
-      </button>
-
-      {isOpen && (
-        <div className="p-5 text-slate-600 text-sm leading-relaxed space-y-4 border-t border-slate-200 bg-white">
-          {children}
-        </div>
-      )}
-    </div>
-  );
-}
+import React from 'react';
+import { useAppStore } from '@/store/useAppStore';
+import { X, User, Home, Earth, AlertTriangle, FileCheck } from 'lucide-react';
 
 export function TutorialGuide() {
+  const { isHelpDrawerOpen, toggleHelpDrawer } = useAppStore();
+
+  if (!isHelpDrawerOpen) return null;
+
+  const phases = [
+    {
+      title: "Phase 1: Client Onboarding & Financial Baselines",
+      icon: <User className="w-5 h-5 text-blue-600" />,
+      color: "bg-blue-50 border-blue-200",
+      steps: [
+        {
+          name: "Step 1: Enter the Client's Full Name",
+          how: "In the 'Income, Funds & Loan Setup' section, type the client's name.",
+          why: "This automatically populates their name onto the final PDF Dossier and the legal Terms & Conditions. Blank names void the personal legal protection."
+        },
+        {
+          name: "Step 2: Enter Incomes, Deposit, and Expenses",
+          how: "Input Applicant 1 (and 2 if joint) gross incomes, total Available Cash Deposit, and Estimated Living Expenses.",
+          why: "The system uses the deposit to calculate their Loan-to-Value Ratio (LVR). If the deposit is too small, it automatically generates a warning in the PDF that they must pay Lenders Mortgage Insurance (LMI)."
+        },
+        {
+          name: "Step 3: Set the Proposed Loan Strategy",
+          how: "At the bottom of the Income module, set the expected Loan Term and select P&I or IO.",
+          why: "This ensures the final monthly repayment estimations on the PDF exactly match the type of loan their broker will apply for."
+        }
+      ]
+    },
+    {
+      title: "Phase 2: Property & Build Numbers",
+      icon: <Home className="w-5 h-5 text-emerald-600" />,
+      color: "bg-emerald-50 border-emerald-200",
+      steps: [
+        {
+          name: "Step 4: Apply SA FHB Exemptions",
+          how: "In the 'Property & Build Contract' module, check the 'Eligible for SA First Home Buyer' box if applicable.",
+          why: "SA abolished stamp duty for new builds for eligible FHBs and provides a $15,000 grant. Checking this drops stamp duty to $0 and subtracts $15k from their required loan."
+        },
+        {
+          name: "Step 5: Enter the Standard Build Prices",
+          how: "Input the Land Purchase Price and the Builder's Base Contract Price.",
+          why: "These are the foundational numbers that the entire strategy is built upon."
+        },
+        {
+          name: "Step 6: Add the 'Hidden' Estimator Buffers",
+          how: "Fill in Site Works, 7-Star NatHERS Upgrade, and the Post-Handover Turnkey Buffer (e.g., $15,000).",
+          why: "Display home prices never include driveways or blinds. Allocating a Turnkey Buffer ensures the client has cash reserved to make the house legally occupiable."
+        },
+        {
+          name: "Step 7: Select the Adelaide Soil Reactivity Risk",
+          how: "Choose the soil risk from the dropdown. If no soil test exists, always select 'Unknown'.",
+          why: "Adelaide has highly reactive clay. Selecting 'Unknown' or 'High' safely forces a $25k to $35k cash buffer into their required loan to pay for deep footings."
+        }
+      ]
+    },
+    {
+      title: "Phase 3: Visa Status & Taxation",
+      icon: <Earth className="w-5 h-5 text-indigo-600" />,
+      color: "bg-indigo-50 border-indigo-200",
+      steps: [
+        {
+          name: "Step 8: Select Visa Status",
+          how: "In the 'Visa & Ownership Matrix', select the applicants' visa types.",
+          why: "RevenueSA enforces a 7% foreign buyer surcharge on temporary residents. The app automatically calculates this hidden tax based on these dropdowns."
+        },
+        {
+          name: "Step 9: Check the PR Refund Timeline",
+          how: "If they pay a surcharge, use the 'RevenueSA PR Refund Strategy' slider to map out their expected Permanent Residency wait time.",
+          why: "If they get PR within 12 months of settlement, RevenueSA refunds the 7% surcharge. This shows exactly how much cash they can reclaim."
+        }
+      ]
+    },
+    {
+      title: "Phase 4: Holding Costs & Stress Tests",
+      icon: <AlertTriangle className="w-5 h-5 text-amber-600" />,
+      color: "bg-amber-50 border-amber-200",
+      steps: [
+        {
+          name: "Step 10: Factor in Delays and Escalations",
+          how: "In 'Advanced Build & Holding Costs', enter the Pre-Build Delay and Builder Price Escalation (usually ~6%).",
+          why: "This calculates exactly how much their contract price will inflate while waiting for land to title."
+        },
+        {
+          name: "Step 11: Review the 'Double-Hit' Cashflow Graph",
+          how: "Scroll down and hover over the 'Double-Hit' Cashflow graph with the client.",
+          why: "It visually proves they must pay their current rent PLUS 90% of their construction loan interest simultaneously right before handover."
+        }
+      ]
+    },
+    {
+      title: "Phase 5: Generating the Documents",
+      icon: <FileCheck className="w-5 h-5 text-slate-600" />,
+      color: "bg-slate-100 border-slate-300",
+      steps: [
+        {
+          name: "Step 12: Generate the Terms & Conditions",
+          how: "Click the 'Download T&C' button.",
+          why: "This must be signed first. It legally protects the business by stating these numbers are estimates and clarifies independence from Weeks Homes."
+        },
+        {
+          name: "Step 13: Generate the Strategy Dossier",
+          how: "Click the 'Download Dossier' button.",
+          why: "This generates the final premium PDF for the client to take directly to their mortgage broker."
+        }
+      ]
+    }
+  ];
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto py-2">
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg border border-slate-700">
-        <div className="flex items-center space-x-3 mb-2">
-          <BookOpen className="w-7 h-7 text-emerald-400" />
-          <h2 className="text-2xl font-extrabold tracking-tight">Broke Builder: The Official Survival Guide</h2>
+    <>
+      {/* Dark Overlay Background */}
+      <div 
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity"
+        onClick={toggleHelpDrawer}
+      />
+
+      {/* Slide-out Drawer */}
+      <div className="fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-2xl z-50 overflow-y-auto transform transition-transform duration-300 flex flex-col">
+        
+        {/* Sticky Header */}
+        <div className="sticky top-0 bg-white border-b border-slate-200 p-5 flex justify-between items-center z-10">
+          <div>
+            <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight">Operating Manual</h2>
+            <p className="text-sm font-medium text-emerald-600">Consultant Step-by-Step Guide</p>
+          </div>
+          <button 
+            onClick={toggleHelpDrawer}
+            className="p-2 bg-slate-100 text-slate-500 rounded-full hover:bg-slate-200 hover:text-slate-900 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-        <p className="text-slate-300 text-sm leading-relaxed">
-          Building a house is a financial minefield of hidden fees, builder escalations, and bank stress tests. This tool is designed to strip away the sales pitches and show you exactly what it will cost, what the bank will actually lend you, and whether you are better off buying now or waiting.
-        </p>
+
+        {/* Content Body */}
+        <div className="p-6 space-y-8">
+          {phases.map((phase, idx) => (
+            <div key={idx} className={`p-5 rounded-xl border ${phase.color}`}>
+              <div className="flex items-center gap-3 mb-4 pb-3 border-b border-black/5">
+                <div className="p-2 bg-white rounded-lg shadow-sm">
+                  {phase.icon}
+                </div>
+                <h3 className="font-bold text-slate-900">{phase.title}</h3>
+              </div>
+              
+              <div className="space-y-5">
+                {phase.steps.map((step, stepIdx) => (
+                  <div key={stepIdx} className="space-y-1.5">
+                    <h4 className="text-sm font-black text-slate-800">{step.name}</h4>
+                    <p className="text-xs text-slate-700 leading-relaxed">
+                      <span className="font-bold text-slate-900">How:</span> {step.how}
+                    </p>
+                    <p className="text-xs text-slate-600 leading-relaxed bg-white/60 p-2 rounded-md border border-white">
+                      <span className="font-bold text-emerald-700">Why it matters:</span> {step.why}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-
-      <GuideSection title="1. Property & Construction Baseline" icon={<Home className="w-5 h-5" />} isOpenDefault={true}>
-        <p>This is where you set the foundation of your project before things get complicated.</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">Land & Build Price:</strong> Enter the sticker price of the land and the base builder's contract.</li>
-          <li><strong className="text-slate-900">Soil Risk Level:</strong> Select your expected soil class. If you choose highly reactive clay (Class H/P), the engine automatically calculates a realistic contingency buffer for upgraded footings so you don't get a shock later.</li>
-          <li><strong className="text-slate-900">Site Works & Energy Upgrades:</strong> Factor in the mandatory extra costs for 7-Star NatHERS compliance and general site preparation (retaining walls, leveling).</li>
-        </ul>
-      </GuideSection>
-
-      <GuideSection title="2. The Delay & Escalation Trap" icon={<TrendingUp className="w-5 h-5" />}>
-        <p>Builders often quote today's price, but if your land takes 9 months to title, that price <em>will</em> go up.</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">Pre-Build Delay:</strong> Use the slider to estimate how many months you will be waiting for your land to title or for council approvals.</li>
-          <li><strong className="text-slate-900">Builder Price Escalation:</strong> Enter the annual inflation rate for construction materials. The engine will compound this percentage over your delay period to show you the <em>true</em> escalated contract price you will be forced to pay by the time the slab is poured.</li>
-        </ul>
-      </GuideSection>
-
-      <GuideSection title="3. The APRA Reality Check" icon={<DollarSign className="w-5 h-5" />}>
-        <p>This module calculates what the bank will actually let you borrow, not what you <em>want</em> to borrow.</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">Income & Debts:</strong> Enter your gross household income and all current debt limits. <em>Note: Always enter the total limit of your credit cards, not your current balance, as banks assess the full limit.</em></li>
-          <li><strong className="text-slate-900">The APRA Buffer:</strong> The engine automatically deducts income tax (ATO Stage 3), subtracts the Medicare levy, and applies the mandatory APRA stress test (adding +3.0% to standard interest rates) to find your absolute maximum borrowing ceiling.</li>
-        </ul>
-        <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="font-bold text-slate-900 mb-2">Health Gauge Zones:</p>
-          <ul className="space-y-1 text-xs">
-            <li><span className="text-emerald-600 font-bold">Green:</span> Your required loan is well within your limits.</li>
-            <li><span className="text-amber-600 font-bold">Yellow:</span> You are pushing up against the edge of your borrowing power.</li>
-            <li><span className="text-red-600 font-bold">Red:</span> The bank will decline this loan. You need a bigger deposit or a cheaper build.</li>
-          </ul>
-        </div>
-      </GuideSection>
-
-      <GuideSection title="4. The Strategy Engine (Buy Now vs. Wait)" icon={<Scale className="w-5 h-5" />}>
-        <p>If you are struggling to afford the build right now, this module compares the financial impact of jumping in today versus waiting and investing your deposit elsewhere.</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">Wait Time:</strong> How long you plan to hold off on buying.</li>
-          <li><strong className="text-slate-900">Property vs. ETF Returns:</strong> Compare the projected growth of the property market against the expected returns of putting your cash deposit into an Index Fund/ETF while you wait.</li>
-          <li><strong className="text-slate-900">The Verdict:</strong> The engine will calculate the "Opportunity Cost" and tell you exactly how much equity you lose (or gain) by delaying the build.</li>
-        </ul>
-      </GuideSection>
-
-      <GuideSection title="5. Construction Drawdowns & Capital Allocation" icon={<PieChart className="w-5 h-5" />}>
-        <p>A visual breakdown of exactly when your money leaves your pocket.</p>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">The 5-Stage Breakdown:</strong> Watch how your loan is distributed across standard builder invoices: Deposit (5%), Base/Slab (20%), Frame (25%), Lock-Up (20%), and Fixing/Completion (30%).</li>
-          <li><strong className="text-slate-900">Progressive Interest:</strong> Understand how your interest-only repayments will slowly increase as the bank releases more funds at each stage of construction.</li>
-        </ul>
-      </GuideSection>
-
-      <GuideSection title="6. Utilities (Export & Offline Mode)" icon={<Download className="w-5 h-5" />}>
-        <ul className="list-disc pl-5 space-y-2">
-          <li><strong className="text-slate-900">Export to PDF:</strong> Click this to generate a clean, professional executive summary of your entire financial strategy. Perfect for taking to a mortgage broker or financial advisor.</li>
-          <li><strong className="text-slate-900">Export to CSV:</strong> Dumps all the raw math and metrics into a spreadsheet for your own records.</li>
-          <li><strong className="text-slate-900">Offline Mode:</strong> Tap "Install App" on your phone. Broke Builder will save to your home screen and run entirely offline, meaning you can calculate site costs while standing on a vacant block of land with zero reception.</li>
-        </ul>
-      </GuideSection>
-    </div>
+    </>
   );
 }

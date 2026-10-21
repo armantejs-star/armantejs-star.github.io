@@ -247,7 +247,6 @@ export function ExportPDFButton() {
                   <td className="py-1 font-bold text-right text-emerald-600">${fhbGrant.toLocaleString()}</td>
                 </tr>
               )}
-              {/* --- NEW LOAN TABLE ROW --- */}
               <tr className="border-b border-slate-100">
                 <td className="py-1 text-slate-600">
                   Est. Repayment ({loanTermYears}yr {repaymentType === 'IO' ? 'IO' : 'P&I'} @ 6%)
@@ -352,8 +351,41 @@ export function ExportPDFButton() {
           <h4 className="font-bold text-slate-900">7. CONFIDENTIALITY AND LIMITATION OF LIABILITY</h4>
           <p>Client data is kept strictly confidential. To the maximum extent permitted by Australian law, the Consultant shall not be liable for direct or indirect losses, loan rejections, or increased construction costs arising from reliance on the consultation.</p>
         </div>
-      </div>
 
+        <div>
+          <h4 className="font-bold text-slate-900">8. INDEPENDENT OPERATION & CONFLICT OF INTEREST DISCLOSURE</h4>
+          <p>The Consultant provides these services as an independent contractor. This consultation, the software utilized, and the resulting Strategy Dossier are strictly independent and are not affiliated with, endorsed by, or representative of the Consultant&apos;s employer, Weeks Homes, or any other specific building entity.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">9. GOVERNMENT GRANTS, VISAS, AND TAXATION POLICIES</h4>
+          <p>The Strategy Dossier models potential eligibility for government incentives, including the South Australian First Home Owner Grant, Stamp Duty exemptions, and RevenueSA Foreign Buyer Surcharge refunds. The Consultant is not a registered migration agent or government representative. Eligibility for grants, tax exemptions, and visa-related refunds is strictly determined by RevenueSA and the Department of Home Affairs. Clients must independently verify their eligibility as legislation is subject to change.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">10. DATA PRIVACY AND SOFTWARE PROCESSING</h4>
+          <p>Client data entered during the consultation is processed locally within the web browser to generate the Strategy Dossier. The Consultant&apos;s software does not transmit, harvest, or store sensitive financial or Personally Identifiable Information (PII) on external database servers. The Client is solely responsible for the safe keeping of their printed or downloaded Dossier.</p>
+        </div>
+      </div>
+<div>
+          <h4 className="font-bold text-slate-900">11. GEOTECHNICAL AND SITE ENGINEERING LIMITATIONS</h4>
+          <p>The &quot;Adelaide Soil Reactivity Risk&quot; buffer utilized in the Strategy Dossier is an estimation based on regional averages. It does not replace a formal geotechnical soil test, contour survey, or structural engineering report. Actual site works and footing costs can strictly only be finalized by a licensed builder following official engineering investigations.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">12. DEVELOPER ENCUMBRANCES AND COUNCIL REGULATIONS</h4>
+          <p>Estimations provided do not account for hidden developer encumbrances, specific local council regulations (including mandatory retaining walls or stormwater detention systems), or National Construction Code (NCC) 2022 energy efficiency orientation mandates. These site-specific requirements frequently incur additional post-contract variations.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">13. BANK VALUATION SHORTFALL ACKNOWLEDGMENT</h4>
+          <p>The &quot;Target Loan&quot; and &quot;Estimated LVR&quot; metrics are calculated based on the total estimated capital cost of the project. The Consultant does not guarantee that a lending institution will value the completed property at this total cost. The Client acknowledges the inherent risk of bank valuation shortfalls and the potential requirement for additional cash funds prior to unconditional finance approval.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">14. EXCLUSION OF THIRD-PARTY RELIANCE</h4>
+          <p>This Strategy Dossier is prepared exclusively for the personal use of the named Client. It may not be relied upon by third parties, including but not limited to builders, mortgage brokers, conveyancers, or financial institutions, for the purpose of extending credit, providing final legal advice, or executing binding building contracts.</p>
+        </div>
       <div className="mt-8 border-2 border-slate-900 p-4 rounded-xl bg-slate-50 avoid-break">
         <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
           Client Acknowledgment & Declaration

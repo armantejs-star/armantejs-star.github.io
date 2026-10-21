@@ -16,12 +16,14 @@ import { CapitalAllocationChart } from '@/components/modules/CapitalAllocationCh
 import { DrawdownTableModule } from '@/components/modules/DrawdownTableModule';
 import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
-import { useAppStore } from '@/store/useAppStore';
-import { BookOpen } from 'lucide-react';
 import { ConstructionStressModule } from '@/components/modules/ConstructionStressModule';
+import { TutorialGuide } from '@/components/modules/TutorialGuide';
+import { useAppStore } from '@/store/useAppStore';
+import { BookOpen, UserCircle } from 'lucide-react';
 
 export default function Home() {
-  const { setKnowledgeBaseOpen } = useAppStore();
+  // Extracting BOTH toggle functions from the store
+  const { setKnowledgeBaseOpen, toggleHelpDrawer } = useAppStore();
   
   const [isAwake, setIsAwake] = useState(false);
   
@@ -49,13 +51,26 @@ export default function Home() {
             </p>
           </div>
 
-          <button 
-            onClick={() => setKnowledgeBaseOpen(true)}
-            className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-200 transition-colors shadow-sm"
-          >
-            <BookOpen className="w-5 h-5" />
-            <span>How To Use</span>
-          </button>
+          {/* HELP BUTTONS GROUP */}
+          <div className="flex gap-3 print:hidden">
+            {/* The existing Knowledge Base button */}
+            <button 
+              onClick={() => setKnowledgeBaseOpen(true)}
+              className="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-slate-300 transition-colors shadow-sm"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span className="hidden sm:inline">Knowledge Base</span>
+            </button>
+            
+            {/* THE NEW OPERATING MANUAL BUTTON */}
+            <button 
+              onClick={toggleHelpDrawer}
+              className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-200 transition-colors shadow-sm"
+            >
+              <UserCircle className="w-5 h-5" />
+              <span>Operating Manual</span>
+            </button>
+          </div>
           
           <div className="flex gap-3 print:hidden">
             <InstallButton />
@@ -86,6 +101,8 @@ export default function Home() {
       </div>
 
       <KnowledgeBaseDrawer />
+      {/* THE NEW SLIDE-OUT GUIDE DRAWER */}
+      <TutorialGuide />
     </main>
   );
 }
