@@ -44,7 +44,6 @@ export function ExportPDFButton() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = land + totalBuildCost;
 
-  // Utilize the new SA FHB status for stamp duty and grants
   const isSaFhbEligible = (c as unknown as { isSaFhbEligible?: boolean }).isSaFhbEligible || false;
   const stampDuty = calculateSaStampDuty(land, isSaFhbEligible);
   const fhbGrant = isSaFhbEligible ? 15000 : 0;
@@ -57,13 +56,24 @@ export function ExportPDFButton() {
   const totalFundsRequired = 
     totalPropertyPrice + stampDuty + foreignSurcharge + totalSetupCosts;
   
-  // Calculate loan minus deposit and any grants
   const targetLoanAmount = Math.max(0, totalFundsRequired - cashDeposit - fhbGrant);
 
+  // --- NEW LOAN MATH ---
   const monthlyRate = (6.0 / 100) / 12;
-  const baselineRepayment = targetLoanAmount > 0 
-    ? (targetLoanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -360)) 
-    : 0;
+  const loanTermYears = (c as unknown as { loanTermYears?: number }).loanTermYears || 30;
+  const loanTermMonths = loanTermYears * 12;
+  const repaymentType = (c as unknown as { repaymentType?: string }).repaymentType || 'PI';
+
+  let baselineRepayment = 0;
+  if (targetLoanAmount > 0) {
+    if (repaymentType === 'IO') {
+      baselineRepayment = targetLoanAmount * monthlyRate;
+    } else {
+      baselineRepayment = (targetLoanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -loanTermMonths));
+    }
+  }
+  // ---------------------
+
   const lvr = totalPropertyPrice > 0 
     ? (targetLoanAmount / totalPropertyPrice) * 100 
     : 0;
@@ -100,7 +110,6 @@ export function ExportPDFButton() {
             @media print {
               main { display: none !important; }
               body { background-color: white !important; }
-              /* Force background colors to print for charts and tables */
               * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
               @page { margin: 10mm; size: A4 portrait; }
               .avoid-break { page-break-inside: avoid; }
@@ -238,8 +247,11 @@ export function ExportPDFButton() {
                   <td className="py-1 font-bold text-right text-emerald-600">${fhbGrant.toLocaleString()}</td>
                 </tr>
               )}
+              {/* --- NEW LOAN TABLE ROW --- */}
               <tr className="border-b border-slate-100">
-                <td className="py-1 text-slate-600">Est. Repayment (6%)</td>
+                <td className="py-1 text-slate-600">
+                  Est. Repayment ({loanTermYears}yr {repaymentType === 'IO' ? 'IO' : 'P&I'} @ 6%)
+                </td>
                 <td className="py-1 font-bold text-right">${Math.round(baselineRepayment).toLocaleString()} /mo</td>
               </tr>
             </tbody>

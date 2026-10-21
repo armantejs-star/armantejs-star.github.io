@@ -9,7 +9,6 @@ import { Tooltip } from '@/components/ui/Tooltip';
 export function IncomeDepositModule() {
   const { current, setAppState } = useAppStore();
   
-  // FIX: Replaced 'any' with strict unknown casting to satisfy ESLint
   const clientName = (current as unknown as { clientName?: string }).clientName || '';
   const income1 = current.applicant1Income || 0;
   const income2 = current.applicant2Income || 0;
@@ -18,6 +17,10 @@ export function IncomeDepositModule() {
   
   const isJointPurchase = current.visaStatus?.isJointPurchase || false;
 
+  // NEW LOAN DATA
+  const loanTermYears = current.loanTermYears || 30;
+  const repaymentType = current.repaymentType || 'PI';
+
   const updateState = (key: string, value: string | number) => {
     setAppState({ [key]: value });
   };
@@ -25,8 +28,8 @@ export function IncomeDepositModule() {
   return (
     <Card className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Income & Funds</h2>
-        <Tooltip text="These figures are tested against APRA's +3.0% interest rate buffer to calculate maximum borrowing capacity." />
+        <h2 className="text-xl font-bold text-slate-800">Income, Funds & Loan Setup</h2>
+        <Tooltip text="Configure client income, deposit, and targeted loan preferences." />
       </div>
 
       <div className="space-y-4">
@@ -64,15 +67,39 @@ export function IncomeDepositModule() {
             onChange={(v) => updateState('cashDeposit', v)} 
           />
 
-          <div className="md:col-span-2 mt-2">
-            <CurrencyInput 
-              label="Estimated Annual Living Expenses" 
-              value={expenses} 
-              onChange={(v) => updateState('annualLivingExpenses', v)} 
-            />
-            <p className="text-xs text-slate-500 mt-2">
-              * Banks will use this figure or the standard HEM (Household Expenditure Measure) benchmark, whichever is higher.
-            </p>
+          <CurrencyInput 
+            label="Estimated Annual Living Expenses" 
+            value={expenses} 
+            onChange={(v) => updateState('annualLivingExpenses', v)} 
+          />
+        </div>
+
+        {/* NEW LOAN PREFERENCES SECTION */}
+        <div className="border-t border-slate-100 pt-4 mt-2">
+          <h3 className="text-sm font-bold text-slate-800 mb-3">Proposed Loan Strategy</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col space-y-1">
+              <label className="text-sm font-medium text-slate-700">Loan Term (Years)</label>
+              <input 
+                type="number"
+                min="10"
+                max="40"
+                value={loanTermYears || ''}
+                onChange={(e) => updateState('loanTermYears', Number(e.target.value))}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900 text-sm shadow-sm"
+              />
+            </div>
+            <div className="flex flex-col space-y-1">
+              <label className="text-sm font-medium text-slate-700">Repayment Type</label>
+              <select 
+                value={repaymentType}
+                onChange={(e) => updateState('repaymentType', e.target.value)}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900 text-sm cursor-pointer shadow-sm"
+              >
+                <option value="PI">Principal & Interest (P&I)</option>
+                <option value="IO">Interest Only (IO)</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>

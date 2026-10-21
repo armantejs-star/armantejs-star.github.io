@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import { ScenarioState } from '@/types/types';
 
-// We formally extend your existing dictionary with the new consulting features
 export type AppState = ScenarioState & {
   clientName: string;
   isSaFhbEligible: boolean;
   buildDurationMonths: number;
   turnkeyAllowance: number;
+  // NEW LOAN PREFERENCES
+  loanTermYears: number;
+  repaymentType: 'PI' | 'IO';
 };
 
 const INITIAL_STATE: AppState = {
@@ -45,11 +47,14 @@ const INITIAL_STATE: AppState = {
   propertyGrowthPct: 5.0,
   etfReturnPct: 7.0,
 
-  // --- NEW CONSULTING FEATURES ---
   clientName: '',
   isSaFhbEligible: false,
   buildDurationMonths: 9,
   turnkeyAllowance: 15000,
+  
+  // NEW DEFAULTS
+  loanTermYears: 30,
+  repaymentType: 'PI',
 };
 
 interface AppStore {

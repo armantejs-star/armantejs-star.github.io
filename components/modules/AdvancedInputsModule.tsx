@@ -30,7 +30,8 @@ export function AdvancedInputsModule() {
           </label>
           <input
             type="number"
-            value={current.preBuildDelayMonths ?? 0}
+            /* FIX: Changed ?? 0 to || '' to stop the zero from getting stuck */
+            value={current.preBuildDelayMonths || ''}
             onChange={(e) => updateState('preBuildDelayMonths', Number(e.target.value))}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900"
           />
@@ -45,7 +46,8 @@ export function AdvancedInputsModule() {
           <input
             type="number"
             step="0.1"
-            value={current.builderEscalationPct ?? 6.0}
+            /* FIX: Changed ?? 6.0 to || '' to stop the number getting stuck */
+            value={current.builderEscalationPct || ''}
             onChange={(e) => updateState('builderEscalationPct', Number(e.target.value))}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900"
           />
@@ -59,7 +61,8 @@ export function AdvancedInputsModule() {
           </label>
           <input
             type="number"
-            value={current.contingencyPct ?? 10}
+            /* FIX: Changed ?? 10 to || '' to stop the number getting stuck */
+            value={current.contingencyPct || ''}
             onChange={(e) => updateState('contingencyPct', Number(e.target.value))}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900"
           />

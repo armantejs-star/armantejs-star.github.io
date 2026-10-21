@@ -11,10 +11,9 @@ export function PropertyBuildModule() {
   const { current, setAppState } = useAppStore();
   const { property } = current;
 
-  // Pulling our new consulting features from the store safely
   const isSaFhbEligible = current.isSaFhbEligible || false;
   const turnkeyAllowance = current.turnkeyAllowance || 0;
-  const buildDurationMonths = current.buildDurationMonths || 9;
+  const buildDurationMonths = current.buildDurationMonths || 0; // fallback to 0
 
   const updateProperty = (key: keyof typeof property, value: number | string) => {
     setAppState({
@@ -36,7 +35,6 @@ export function PropertyBuildModule() {
         <Tooltip text="Enter your land and fixed-price build details here. Stamp duty is only calculated on the land price for new builds." />
       </div>
 
-      {/* NEW: High-Visibility SA FHB Toggle */}
       <div className="flex items-center space-x-4 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
         <input
           type="checkbox"
@@ -77,7 +75,6 @@ export function PropertyBuildModule() {
           onChange={(v) => updateProperty('nathers7StarUpgrade', v)} 
         />
         
-        {/* NEW: Turnkey Allowance */}
         <div className="md:col-span-1 border-t border-slate-100 pt-4 md:border-none md:pt-0">
           <CurrencyInput 
             label="Post-Handover Turnkey Buffer" 
@@ -89,7 +86,6 @@ export function PropertyBuildModule() {
           </p>
         </div>
 
-        {/* NEW: Build Duration */}
         <div className="md:col-span-1 border-t border-slate-100 pt-4 md:border-none md:pt-0 flex flex-col space-y-1">
           <label className="text-sm font-medium text-slate-700 flex items-center">
             Est. Build Duration (Months)
@@ -99,7 +95,8 @@ export function PropertyBuildModule() {
             type="number"
             min="1"
             max="36"
-            value={buildDurationMonths}
+            /* FIX: If it is 0, show an empty string so they can type cleanly */
+            value={buildDurationMonths || ''}
             onChange={(e) => updateRoot('buildDurationMonths', Number(e.target.value))}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900 text-sm shadow-sm"
           />
@@ -110,7 +107,6 @@ export function PropertyBuildModule() {
         <div className="flex flex-col space-y-1">
           <label className="text-sm font-medium text-slate-700 flex items-center">
             Adelaide Soil Reactivity Risk
-            <Tooltip text="Adelaide is notorious for reactive clay. Class H/E requires deeper footings, often adding $20k-$40k post-contract." />
           </label>
           <select 
             value={property.soilClassificationRisk}
