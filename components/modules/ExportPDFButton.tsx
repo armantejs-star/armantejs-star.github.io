@@ -58,7 +58,7 @@ export function ExportPDFButton() {
   
   const targetLoanAmount = Math.max(0, totalFundsRequired - cashDeposit - fhbGrant);
 
-  // --- NEW LOAN MATH ---
+  // --- LOAN MATH ---
   const monthlyRate = (6.0 / 100) / 12;
   const loanTermYears = (c as unknown as { loanTermYears?: number }).loanTermYears || 30;
   const loanTermMonths = loanTermYears * 12;
@@ -366,15 +366,15 @@ export function ExportPDFButton() {
           <h4 className="font-bold text-slate-900">10. DATA PRIVACY AND SOFTWARE PROCESSING</h4>
           <p>Client data entered during the consultation is processed locally within the web browser to generate the Strategy Dossier. The Consultant&apos;s software does not transmit, harvest, or store sensitive financial or Personally Identifiable Information (PII) on external database servers. The Client is solely responsible for the safe keeping of their printed or downloaded Dossier.</p>
         </div>
-      </div>
-<div>
+
+        <div>
           <h4 className="font-bold text-slate-900">11. GEOTECHNICAL AND SITE ENGINEERING LIMITATIONS</h4>
           <p>The &quot;Adelaide Soil Reactivity Risk&quot; buffer utilized in the Strategy Dossier is an estimation based on regional averages. It does not replace a formal geotechnical soil test, contour survey, or structural engineering report. Actual site works and footing costs can strictly only be finalized by a licensed builder following official engineering investigations.</p>
         </div>
 
         <div>
           <h4 className="font-bold text-slate-900">12. DEVELOPER ENCUMBRANCES AND COUNCIL REGULATIONS</h4>
-          <p>Estimations provided do not account for hidden developer encumbrances, specific local council regulations (including mandatory retaining walls or stormwater detention systems), or National Construction Code (NCC) 2022 energy efficiency orientation mandates. These site-specific requirements frequently incur additional post-contract variations.</p>
+          <p>Estimations provided do not account for hidden developer encumbrances, specific local council regulations (including mandatory retaining walls or stormwater detention systems), or National Construction Code (NCC) energy efficiency orientation mandates. These site-specific requirements frequently incur additional post-contract variations.</p>
         </div>
 
         <div>
@@ -386,6 +386,48 @@ export function ExportPDFButton() {
           <h4 className="font-bold text-slate-900">14. EXCLUSION OF THIRD-PARTY RELIANCE</h4>
           <p>This Strategy Dossier is prepared exclusively for the personal use of the named Client. It may not be relied upon by third parties, including but not limited to builders, mortgage brokers, conveyancers, or financial institutions, for the purpose of extending credit, providing final legal advice, or executing binding building contracts.</p>
         </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">15. LIMITATION OF LIABILITY CAP</h4>
+          <p>To the maximum extent permitted by the Australian Consumer Law, the Consultant&apos;s total aggregate liability for any claim, loss, or damage arising out of or in connection with these Services (whether in contract, tort, negligence, or otherwise) shall be strictly limited to the total consultation fee paid by the Client. The Consultant shall not be liable for any consequential, punitive, or special damages.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">16. INDEMNIFICATION</h4>
+          <p>The Client agrees to indemnify, defend, and hold harmless the Consultant from any claims, damages, liabilities, costs, or legal fees arising directly or indirectly from the Client&apos;s misuse of the Strategy Dossier, reliance on estimated figures to execute contracts, or the provision of false or inaccurate data during the consultation.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">17. ENTIRE AGREEMENT AND NO VERBAL PROMISES</h4>
+          <p>These Terms, combined with the generated Strategy Dossier, constitute the entire agreement between the Client and Consultant. Any verbal discussions, estimations, or representations made during the consultation session are expressly superseded by this written document and hold no legal weight.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">18. GOVERNING LAW AND SEVERABILITY</h4>
+          <p>These Terms shall be governed by and construed in accordance with the laws of South Australia. Any legal disputes must be resolved exclusively in the courts of South Australia. If any provision of these Terms is deemed invalid or unenforceable by a court, the remaining provisions shall remain in full force and effect.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">19. BUILDER INSOLVENCY AND THIRD-PARTY DEFAULT</h4>
+          <p>The Consultant assumes no liability for the financial stability, performance, or solvency of any building company, developer, or third-party contractor selected by the Client. The Client assumes all risks associated with builder insolvency, supply chain delays, and breach of contract by third parties.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">20. SEPARATION FROM PROJECT MANAGEMENT AND EXECUTION</h4>
+          <p>The Services are strictly limited to pre-construction strategy and financial estimation. The Consultant does not act as a project manager, client advocate, or site supervisor. The Client is solely responsible for the execution, negotiation, and ongoing management of their building contract and associated stakeholders.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">21. NO GUARANTEE OF PROCUREMENT OR COUNCIL APPROVALS</h4>
+          <p>The provision of estimated costs does not constitute a guarantee that the Client will successfully secure land or building contracts at the stated prices. Furthermore, the Consultant makes no representations regarding the likelihood of obtaining necessary planning consents or local council building approvals.</p>
+        </div>
+
+        <div>
+          <h4 className="font-bold text-slate-900">22. INTELLECTUAL PROPERTY AND RESTRICTION ON REPRODUCTION</h4>
+          <p>The methodology, financial models, and layout contained within the Strategy Dossier remain the exclusive intellectual property of the Consultant. The Client is granted a single, non-transferable license to use the Dossier for personal property acquisition. The Client may not reproduce, reverse-engineer, publish, or distribute the Dossier for commercial gain.</p>
+        </div>
+      </div>
+
       <div className="mt-8 border-2 border-slate-900 p-4 rounded-xl bg-slate-50 avoid-break">
         <h4 className="font-bold text-xs uppercase tracking-wider text-slate-900 mb-2">
           Client Acknowledgment & Declaration
