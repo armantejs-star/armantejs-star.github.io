@@ -7,46 +7,48 @@ import { CheckCircle2, Circle } from 'lucide-react';
 export function JourneyTracker() {
   const { current } = useAppStore();
   const { 
-    activeView, property, establishedProperty, applicant1Income, cashDeposit 
+    activeView, property, establishedProperty, applicant1Income, applicant2Income, cashDeposit,
+    conveyancingFees, postBuildSetup, turnkeyAllowance
   } = current;
 
   // 1. DETERMINE WHICH JOURNEY WE ARE ON
   const isBuild = activeView === 'build';
   const isCompare = activeView === 'compare';
 
-  // 2. DEFINE THE MILESTONES & COMPLETION LOGIC
+  // 2. STRICTER MILESTONE & COMPLETION LOGIC
   let steps = [];
   let currentStep = 0;
 
   if (isBuild || isCompare) {
-    // BUILD JOURNEY LOGIC
+    // BUILD LOGIC
     const hasLand = (property?.landPrice || 0) > 0;
-    const hasBuild = (property?.buildPrice || 0) > 0;
-    const hasFinance = (applicant1Income || 0) > 0 || (cashDeposit || 0) > 0;
-    const hasSiteWorks = (property?.siteWorks || 0) > 0;
+    const hasBuild = (property?.buildPrice || 0) > 0 && (property?.siteWorks || 0) > 0;
+    const hasFinance = ((applicant1Income || 0) > 0 || (applicant2Income || 0) > 0) && (cashDeposit || 0) > 0;
+    const hasAdvanced = (conveyancingFees || 0) > 0 || (postBuildSetup || 0) > 0 || (turnkeyAllowance || 0) > 0;
     
     if (hasLand) currentStep = 1;
     if (hasLand && hasBuild) currentStep = 2;
     if (hasLand && hasBuild && hasFinance) currentStep = 3;
-    if (hasLand && hasBuild && hasFinance && hasSiteWorks) currentStep = 4;
+    if (hasLand && hasBuild && hasFinance && hasAdvanced) currentStep = 4;
     
     steps = [
       { label: "Site Prep", completed: currentStep >= 1 },
       { label: "Slab Poured", completed: currentStep >= 2 },
       { label: "Frame Stage", completed: currentStep >= 3 },
       { label: "Lock-Up", completed: currentStep >= 4 },
-      { label: "Handover", completed: currentStep >= 4 } // Completes alongside Lock-Up to show full readiness
+      { label: "Handover", completed: currentStep >= 4 }
     ];
   } else {
-    // ESTABLISHED JOURNEY LOGIC
+    // ESTABLISHED LOGIC
     const hasTarget = (establishedProperty?.purchasePrice || 0) > 0;
-    const hasFinance = (applicant1Income || 0) > 0 || (cashDeposit || 0) > 0;
     const hasBuffer = (establishedProperty?.renovationBuffer || 0) > 0 || (establishedProperty?.strataYearly || 0) > 0;
+    const hasFinance = ((applicant1Income || 0) > 0 || (applicant2Income || 0) > 0) && (cashDeposit || 0) > 0;
+    const hasAdvanced = (conveyancingFees || 0) > 0;
 
     if (hasTarget) currentStep = 1;
     if (hasTarget && hasBuffer) currentStep = 2;
     if (hasTarget && hasBuffer && hasFinance) currentStep = 3;
-    if (hasTarget && hasBuffer && hasFinance) currentStep = 4; 
+    if (hasTarget && hasBuffer && hasFinance && hasAdvanced) currentStep = 4; 
 
     steps = [
       { label: "Target Sourced", completed: currentStep >= 1 },
@@ -56,10 +58,9 @@ export function JourneyTracker() {
     ];
   }
 
-  // Calculate percentage for the connecting green line
-  const progressPercentage = steps.length > 1 
-    ? (steps.filter(s => s.completed).length - 1) / (steps.length - 1) * 100 
-    : 0;
+  // Calculate percentage safely so the line stays empty when 0 nodes are complete
+  const completedCount = steps.filter(s => s.completed).length;
+  const progressPercentage = completedCount === 0 ? 0 : ((completedCount - 1) / (steps.length - 1)) * 100;
 
   return (
     <div className="w-full bg-white px-4 md:px-8 py-5 border-b border-slate-200 print:hidden">
@@ -71,7 +72,7 @@ export function JourneyTracker() {
             {isBuild ? "Construction Pipeline" : isCompare ? "Strategy Pipeline" : "Acquisition Pipeline"}
           </h3>
           <span className="text-[10px] md:text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full shadow-sm">
-            {steps.filter(s => s.completed).length} / {steps.length} Stages Mapped
+            {completedCount} / {steps.length} Stages Mapped
           </span>
         </div>
 
@@ -83,7 +84,7 @@ export function JourneyTracker() {
           {/* Active Emerald Fill Line */}
           <div 
             className="absolute top-1/2 left-0 h-1 bg-emerald-500 -translate-y-1/2 transition-all duration-1000 ease-out rounded-full"
-            style={{ width: `${Math.max(0, progressPercentage)}%` }}
+            style={{ width: `${progressPercentage}%` }}
           />
 
           {/* Milestone Nodes */}
@@ -112,7 +113,6 @@ export function JourneyTracker() {
           </div>
         </div>
         
-        {/* Spacer for absolute positioned labels below the line */}
         <div className="h-6" />
       </div>
     </div>
