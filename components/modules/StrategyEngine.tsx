@@ -7,6 +7,7 @@ import { getSoilBuffer } from '@/constants/soil';
 import { calculateSaStampDuty } from '@/lib/math/stampDuty';
 import { calculateEffectiveSurchargeRate } from '@/lib/math/mixedVisa';
 import { Calculator, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AnimatedNumber } from '@/components/ui/AnimatedNumber';
 
 export function StrategyEngine() {
   const { current } = useAppStore();
@@ -28,7 +29,6 @@ export function StrategyEngine() {
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
   // 2. SOUTH AUSTRALIA TAX LEGISLATION
-  // FHB Stamp Duty Abolition ONLY applies to new builds. Established forces standard duty.
   const stampDuty = isBuild 
     ? calculateSaStampDuty(land, isSaFhbEligible)
     : calculateSaStampDuty(totalPropertyPrice, false); 
@@ -71,11 +71,15 @@ export function StrategyEngine() {
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-slate-800 p-4 rounded-xl">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Target Loan</p>
-            <p className="text-2xl font-black text-emerald-400">${targetLoanAmount.toLocaleString()}</p>
+            <p className="text-2xl font-black text-emerald-400">
+              <AnimatedNumber prefix="$" value={targetLoanAmount} />
+            </p>
           </div>
           <div className="bg-slate-800 p-4 rounded-xl">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Required</p>
-            <p className="text-2xl font-black text-white">${totalFundsRequired.toLocaleString()}</p>
+            <p className="text-2xl font-black text-white">
+              <AnimatedNumber prefix="$" value={totalFundsRequired} />
+            </p>
           </div>
         </div>
 

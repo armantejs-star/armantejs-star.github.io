@@ -1,13 +1,13 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 
 interface CardProps {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
 }
 
 export function Card({ children, className = '' }: CardProps) {
   return (
-    <div className={`bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden ${className}`}>
+    <div className={`bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden ${className}`}>
       {children}
     </div>
   );
