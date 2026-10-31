@@ -18,6 +18,7 @@ import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
 import { ConstructionStressModule } from '@/components/modules/ConstructionStressModule';
 import { TutorialGuide } from '@/components/modules/TutorialGuide';
+import { EstablishedPropertyModule } from '@/components/modules/EstablishedPropertyModule';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen, UserCircle, Building, Home as HomeIcon, Scale } from 'lucide-react';
 
@@ -144,13 +145,7 @@ export default function Home() {
         {activeView === 'established' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 print:block">
             <div className="lg:col-span-7 space-y-6 print:space-y-4">
-              {/* PLACEHOLDER: We will build EstablishedPropertyModule next */}
-              <div className="bg-white border-2 border-dashed border-slate-300 rounded-xl p-8 text-center">
-                <HomeIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <h3 className="text-lg font-bold text-slate-700">Established Property Module</h3>
-                <p className="text-sm text-slate-500 mt-1">Component under construction.</p>
-              </div>
-              
+              <EstablishedPropertyModule />
               <RefundVisualizer />
               <OpportunityCostModule />
               <RepaymentModule />
