@@ -11,21 +11,24 @@ import { getSoilBuffer } from '@/constants/soil';
 
 export function RefundVisualizer() {
   const { current, setAppState } = useAppStore();
-  const { property, visaStatus, expectedPRWaitMonths } = current;
+  const { activeView, property, establishedProperty, visaStatus, expectedPRWaitMonths } = current;
 
-  // 1. Re-calculate the exact surcharge paid
-  const soilBuffer = getSoilBuffer(property.soilClassificationRisk);
-  const totalBuildCost = property.buildPrice + property.siteWorks + property.nathers7StarUpgrade + soilBuffer;
-  const totalPropertyPrice = property.landPrice + totalBuildCost;
+  // 1. ISOLATE THE MATH PATHWAYS (New Dual-Scenario Logic)
+  const isBuild = activeView === 'build';
+  const land = isBuild ? (property?.landPrice || 0) : 0;
+  const totalBuildCost = isBuild ? ((property?.buildPrice || 0) + (property?.siteWorks || 0) + (property?.nathers7StarUpgrade || 0) + getSoilBuffer(property?.soilClassificationRisk || 'Unknown')) : 0;
+  
+  const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
+
+  // 2. RE-CALCULATE EXACT SURCHARGE PAID
   const surchargeRate = calculateEffectiveSurchargeRate(visaStatus);
   const foreignSurchargePaid = totalPropertyPrice * surchargeRate;
 
-  // 2. Run it through our PR Refund Engine
+  // 3. PR REFUND ENGINE (Your Restored Engine)
   const refundAmount = calculatePrRefundPotential(foreignSurchargePaid, expectedPRWaitMonths);
   const isEligible = refundAmount > 0;
 
-  // 3. Smart UI: If they don't have to pay a surcharge (e.g., they are Citizens), 
-  // we completely hide this module so we don't clutter the screen!
+  // 4. SMART UI HIDE
   if (foreignSurchargePaid === 0) return null;
 
   return (
