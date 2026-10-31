@@ -17,9 +17,9 @@ import { DrawdownTableModule } from '@/components/modules/DrawdownTableModule';
 import { KnowledgeBaseDrawer } from '@/components/modules/KnowledgeBaseDrawer';
 import { HealthGauge } from '@/components/modules/HealthGauge';
 import { ConstructionStressModule } from '@/components/modules/ConstructionStressModule';
-import { TutorialGuide } from '@/components/modules/TutorialGuide';
 import { EstablishedPropertyModule } from '@/components/modules/EstablishedPropertyModule';
 import { ComparisonMatrix } from '@/components/modules/ComparisonMatrix';
+import { JourneyTracker } from '@/components/modules/JourneyTracker';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen, Building, Home as HomeIcon, Scale } from 'lucide-react';
 
@@ -41,36 +41,82 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-4 md:p-8 pb-32 print:bg-white print:p-0 relative overflow-x-hidden">
-      <div className="max-w-7xl mx-auto space-y-8 print:space-y-4">
-        
-        {/* HEADER AREA */}
-        <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 print:flex-row print:mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Broke Builder</h1>
-            <p className="text-slate-600 mt-2 print:hidden">
-              Comprehensive Property, Construction & Financial Strategy Engine
-            </p>
-          </div>
-
-          <div className="flex gap-3 print:hidden">
-            <button 
-              onClick={() => setKnowledgeBaseOpen(true)}
-              className="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-slate-300 transition-colors shadow-sm"
-            >
-              <BookOpen className="w-5 h-5" />
-              <span className="hidden sm:inline">Broke Builder Documentation</span>
-            </button>
-          </div>
+    <main className="min-h-screen bg-slate-50 pb-32 print:bg-white print:pb-0 relative overflow-x-hidden">
+      
+      {/* --- STICKY GLASSMORPHIC HEADER --- */}
+      <div className="sticky top-0 z-40 w-full bg-slate-50/90 backdrop-blur-xl border-b border-slate-200 print:hidden shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-4 md:pt-6">
           
-          <div className="flex gap-3 print:hidden">
-            <InstallButton />
-            <ExportCSVButton />
-            <ExportPDFButton />
-          </div>
-        </div>
+          {/* Top Branding & Tools Bar */}
+          <div className="flex justify-between items-start md:items-center flex-col md:flex-row gap-4 mb-4">
+            <div>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Broke Builder</h1>
+              <p className="text-slate-500 mt-1 text-sm font-medium">
+                Premium Property & Financial Strategy Engine
+              </p>
+            </div>
 
-        {/* --- GLOBAL PROFILE (Always Visible) --- */}
+            <div className="flex gap-2 md:gap-3 flex-wrap">
+              <button 
+                onClick={() => setKnowledgeBaseOpen(true)}
+                className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-slate-50 transition-colors shadow-sm text-xs md:text-sm"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">Documentation</span>
+              </button>
+              <InstallButton />
+              <ExportCSVButton />
+              <ExportPDFButton />
+            </div>
+          </div>
+
+          {/* Journey Tracker Pipeline */}
+          <div className="-mx-4 md:-mx-8">
+            <JourneyTracker />
+          </div>
+
+          {/* FotMob Pill Tabs */}
+          <div className="py-4">
+            <div className="bg-slate-200/70 p-1.5 rounded-full flex flex-col sm:flex-row gap-1 shadow-inner max-w-2xl mx-auto">
+              <button
+                onClick={() => setAppState({ activeView: 'build' })}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm transition-all duration-300 ${
+                  activeView === 'build' ? 'bg-slate-900 text-white shadow-md scale-[1.02]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                }`}
+              >
+                <Building className="w-4 h-4" />
+                Build New
+              </button>
+              
+              <button
+                onClick={() => setAppState({ activeView: 'established' })}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm transition-all duration-300 ${
+                  activeView === 'established' ? 'bg-slate-900 text-white shadow-md scale-[1.02]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                }`}
+              >
+                <HomeIcon className="w-4 h-4" />
+                Buy Established
+              </button>
+
+              <button
+                onClick={() => setAppState({ activeView: 'compare' })}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-bold text-sm transition-all duration-300 ${
+                  activeView === 'compare' ? 'bg-indigo-600 text-white shadow-md scale-[1.02]' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                }`}
+              >
+                <Scale className="w-4 h-4" />
+                Compare Options
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* --- SCROLLING CONTENT AREA --- */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 space-y-8 print:p-0 print:space-y-4">
+        
+        {/* Global Client Profile */}
         <div className="print:block space-y-6">
           <h2 className="text-sm font-black uppercase tracking-widest text-slate-400 mb-2 border-b border-slate-200 pb-2">Global Client Profile</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -78,41 +124,6 @@ export default function Home() {
             <SpousalVisaMatrix />
           </div>
         </div>
-
-        {/* --- MASTER SCENARIO TAB BAR --- */}
-        <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-2 print:hidden">
-          <button
-            onClick={() => setAppState({ activeView: 'build' })}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
-              activeView === 'build' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'
-            }`}
-          >
-            <Building className="w-5 h-5" />
-            Build New
-          </button>
-          
-          <button
-            onClick={() => setAppState({ activeView: 'established' })}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
-              activeView === 'established' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'
-            }`}
-          >
-            <HomeIcon className="w-5 h-5" />
-            Buy Established
-          </button>
-
-          <button
-            onClick={() => setAppState({ activeView: 'compare' })}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
-              activeView === 'compare' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-100'
-            }`}
-          >
-            <Scale className="w-5 h-5" />
-            Compare Options
-          </button>
-        </div>
-
-        {/* --- SCENARIO CONTENT ROUTER --- */}
         
         {/* VIEW: BUILD */}
         {activeView === 'build' && (
@@ -159,7 +170,6 @@ export default function Home() {
       </div>
 
       <KnowledgeBaseDrawer />
-      <TutorialGuide />
     </main>
   );
 }
