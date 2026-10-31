@@ -6,9 +6,18 @@ export type AppState = ScenarioState & {
   isSaFhbEligible: boolean;
   buildDurationMonths: number;
   turnkeyAllowance: number;
-  // NEW LOAN PREFERENCES
+  // LOAN PREFERENCES
   loanTermYears: number;
   repaymentType: 'PI' | 'IO';
+  
+  // --- NEW: PHASE 1 DUAL-ENGINE ARCHITECTURE ---
+  activeView: 'build' | 'established' | 'compare';
+  establishedProperty: {
+    purchasePrice: number;
+    strataYearly: number;
+    renovationBuffer: number;
+    settlementDays: number;
+  };
 };
 
 const INITIAL_STATE: AppState = {
@@ -52,9 +61,17 @@ const INITIAL_STATE: AppState = {
   buildDurationMonths: 9,
   turnkeyAllowance: 15000,
   
-  // NEW DEFAULTS
   loanTermYears: 30,
   repaymentType: 'PI',
+
+  // --- NEW DEFAULTS FOR ESTABLISHED MODE ---
+  activeView: 'build', // Defaults to the current working mode
+  establishedProperty: {
+    purchasePrice: 650000,
+    strataYearly: 0,
+    renovationBuffer: 10000,
+    settlementDays: 30,
+  },
 };
 
 interface AppStore {
