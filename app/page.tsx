@@ -21,10 +21,10 @@ import { TutorialGuide } from '@/components/modules/TutorialGuide';
 import { EstablishedPropertyModule } from '@/components/modules/EstablishedPropertyModule';
 import { ComparisonMatrix } from '@/components/modules/ComparisonMatrix';
 import { useAppStore } from '@/store/useAppStore';
-import { BookOpen, UserCircle, Building, Home as HomeIcon, Scale } from 'lucide-react';
+import { BookOpen, Building, Home as HomeIcon, Scale } from 'lucide-react';
 
 export default function Home() {
-  const { current, setAppState, setKnowledgeBaseOpen, toggleHelpDrawer } = useAppStore();
+  const { current, setAppState, setKnowledgeBaseOpen } = useAppStore();
   const { activeView } = current;
   
   const [isAwake, setIsAwake] = useState(false);
@@ -59,15 +59,7 @@ export default function Home() {
               className="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-slate-300 transition-colors shadow-sm"
             >
               <BookOpen className="w-5 h-5" />
-              <span className="hidden sm:inline">Knowledge Base</span>
-            </button>
-            
-            <button 
-              onClick={toggleHelpDrawer}
-              className="bg-emerald-100 text-emerald-800 px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-emerald-200 transition-colors shadow-sm"
-            >
-              <UserCircle className="w-5 h-5" />
-              <span>Operating Manual</span>
+              <span className="hidden sm:inline">Broke Builder Documentation</span>
             </button>
           </div>
           
