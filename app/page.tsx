@@ -19,6 +19,7 @@ import { HealthGauge } from '@/components/modules/HealthGauge';
 import { ConstructionStressModule } from '@/components/modules/ConstructionStressModule';
 import { TutorialGuide } from '@/components/modules/TutorialGuide';
 import { EstablishedPropertyModule } from '@/components/modules/EstablishedPropertyModule';
+import { ComparisonMatrix } from '@/components/modules/ComparisonMatrix';
 import { useAppStore } from '@/store/useAppStore';
 import { BookOpen, UserCircle, Building, Home as HomeIcon, Scale } from 'lucide-react';
 
@@ -160,13 +161,7 @@ export default function Home() {
 
         {/* VIEW: COMPARE */}
         {activeView === 'compare' && (
-          <div className="bg-indigo-50 border-2 border-indigo-200 rounded-xl p-12 text-center shadow-inner">
-            <Scale className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-black text-indigo-900 tracking-tight">Side-by-Side Matrix Engine</h2>
-            <p className="text-indigo-700 mt-2 max-w-md mx-auto">
-              The comparative data engine will render here, analyzing the total capital variance between building new and buying established.
-            </p>
-          </div>
+          <ComparisonMatrix />
         )}
 
       </div>
