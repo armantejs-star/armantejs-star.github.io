@@ -28,11 +28,12 @@ export function StrategyEngine() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. DETECT VISAS & MIXED COUPLES (Smart Logic)
+  // 2. DETECT VISAS & MIXED COUPLES (Bulletproof Smart Detection)
   const isTemp = (visa?: string) => {
     if (!visa) return false;
-    const permanentVisas = ['Citizen', 'PR', 'Permanent Resident', 'Subclass 189', 'Subclass 190', 'Subclass 801', 'Subclass 820'];
-    return !permanentVisas.includes(visa);
+    const v = visa.toLowerCase();
+    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820');
+    return !isPermanent;
   };
 
   const a1Visa = visaStatus?.applicant1?.visa;

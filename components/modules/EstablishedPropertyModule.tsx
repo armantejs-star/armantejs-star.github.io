@@ -9,11 +9,12 @@ export function EstablishedPropertyModule() {
   const { current, setAppState } = useAppStore();
   const { establishedProperty, visaStatus } = current;
 
-  // Identify if any applicant is on a Temporary Visa (Smart detection)
+  // Bulletproof Smart Detection (fixes the 190 error completely)
   const isTemp = (visa?: string) => {
     if (!visa) return false;
-    const permanentVisas = ['Citizen', 'PR', 'Permanent Resident', 'Subclass 189', 'Subclass 190', 'Subclass 801', 'Subclass 820'];
-    return !permanentVisas.includes(visa);
+    const v = visa.toLowerCase();
+    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820');
+    return !isPermanent;
   };
   
   const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
