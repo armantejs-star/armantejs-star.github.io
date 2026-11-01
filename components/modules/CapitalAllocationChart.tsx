@@ -26,11 +26,13 @@ export function CapitalAllocationChart() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. DETECT VISAS & MIXED COUPLES (Bulletproof Smart Logic)
+  // 2. DETECT VISAS & MIXED COUPLES (Synced with Strategy Engine including NZ 444)
   const isTemp = (visa?: string) => {
     if (!visa) return false;
     const v = visa.toLowerCase();
-    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820');
+    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || 
+                        v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820') ||
+                        v.includes('444') || v.includes('nz') || v.includes('new zealand');
     return !isPermanent;
   };
 
@@ -38,7 +40,7 @@ export function CapitalAllocationChart() {
   const a2Temp = visaStatus?.applicant2?.visa ? isTemp(visaStatus?.applicant2?.visa) : false;
 
   const hasTemp = a1Temp || a2Temp;
-  const hasPermanent = (!a1Temp && visaStatus?.applicant1?.visa) || (!a2Temp && visaStatus?.applicant2?.visa);
+  const hasPermanent = (!!visaStatus?.applicant1?.visa && !a1Temp) || (!!visaStatus?.applicant2?.visa && !a2Temp);
   const isMixedCouple = hasTemp && hasPermanent;
 
   // 3. TAXES & FIRB

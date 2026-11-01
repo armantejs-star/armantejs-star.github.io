@@ -28,11 +28,13 @@ export function StrategyEngine() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. DETECT VISAS & MIXED COUPLES (Bulletproof Smart Detection)
+  // 2. DETECT VISAS & MIXED COUPLES (Now includes NZ 444 SCV)
   const isTemp = (visa?: string) => {
     if (!visa) return false;
     const v = visa.toLowerCase();
-    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820');
+    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || 
+                        v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820') || 
+                        v.includes('444') || v.includes('nz') || v.includes('new zealand');
     return !isPermanent;
   };
 
@@ -43,18 +45,23 @@ export function StrategyEngine() {
   const a2Temp = a2Visa ? isTemp(a2Visa) : false;
 
   const hasTemp = a1Temp || a2Temp;
-  const hasPermanent = (!a1Temp && a1Visa) || (!a2Temp && a2Visa);
+  const hasPermanent = (!!a1Visa && !a1Temp) || (!!a2Visa && !a2Temp);
   
   const isMixedCouple = hasTemp && hasPermanent;
   const isStrictlyTemp = hasTemp && !hasPermanent;
 
   // 3. TAX & FEDERAL LEGISLATION
+  // RevenueSA Block: Strictly temp couples do NOT get the stamp duty waiver, even if FHB is ticked.
+  const qualifiesForSaRelief = isSaFhbEligible && hasPermanent;
+  
   const stampDuty = isBuild 
-    ? calculateSaStampDuty(land, isSaFhbEligible)
+    ? calculateSaStampDuty(land, qualifiesForSaRelief)
     : calculateSaStampDuty(totalPropertyPrice, false); 
     
   // FHOG requires at least one Citizen/PR
-  const fhbGrant = (isBuild && isSaFhbEligible && hasPermanent) ? 15000 : 0;
+  const fhbGrant = (isBuild && qualifiesForSaRelief) ? 15000 : 0;
+  
+  // Surcharge Rate (RevenueSA 7% Foreign Ownership Surcharge)
   const surchargeRate = calculateEffectiveSurchargeRate(visaStatus);
   const foreignSurcharge = totalPropertyPrice * surchargeRate;
   
@@ -82,7 +89,7 @@ export function StrategyEngine() {
   if (hasTemp && !isMixedCouple) {
     advice.push({ type: 'warning', text: "FIRB Application Fee: A non-refundable fee of $15,600 has been calculated into your setup costs." });
   } else if (isMixedCouple) {
-    advice.push({ type: 'good', text: "Spousal FIRB Exemption: Purchasing jointly with a Citizen/PR spouse completely waives the $15,600 FIRB fee." });
+    advice.push({ type: 'good', text: "Spousal Exemption: Purchasing jointly with a Citizen/PR completely waives the federal FIRB fee and the SA 7% Foreign Surcharge." });
   }
 
   if (isBuild && isStrictlyTemp) {
@@ -92,9 +99,10 @@ export function StrategyEngine() {
 
   // State Allowances & Taxes (FHOG & Stamp Duty)
   if (isBuild && isSaFhbEligible && hasPermanent) {
-    advice.push({ type: 'good', text: "SA FHB Advantage Active: You pay $0 Stamp Duty and receive the $15,000 grant." });
+    advice.push({ type: 'good', text: "SA FHB Advantage Active: You pay $0 Stamp Duty on the land and receive the $15,000 cash grant." });
+    if (isMixedCouple) advice.push({ type: 'warning', text: "Construction Timeline Clash: While FIRB allows 4 years to build, RevenueSA mandates you must finish within 18 months to keep the FHOG." });
   } else if (isBuild && isSaFhbEligible && !hasPermanent) {
-    advice.push({ type: 'warning', text: "FHOG Blocked: SA FHB stamp duty waiver applies, but the $15,000 cash grant requires at least one Citizen/PR." });
+    advice.push({ type: 'critical', text: "SA Relief Blocked: South Australian FHB Stamp Duty waivers and the $15,000 grant require at least one Citizen/PR. You will pay full standard rates." });
   } else if (!isBuild && isSaFhbEligible) {
     advice.push({ type: 'warning', text: "SA FHB Not Applicable: South Australia strictly charges full stamp duty on established homes." });
   }
@@ -109,7 +117,7 @@ export function StrategyEngine() {
   }
 
   if (foreignSurcharge > 0) {
-    advice.push({ type: 'warning', text: `Foreign Buyer Surcharge: ${(surchargeRate * 100).toFixed(1)}% applied to the property price.` });
+    advice.push({ type: 'critical', text: `RevenueSA Foreign Surcharge: A massive 7% state tax (${(surchargeRate * 100).toFixed(1)}%) has been applied to the total property price.` });
   }
 
   return (

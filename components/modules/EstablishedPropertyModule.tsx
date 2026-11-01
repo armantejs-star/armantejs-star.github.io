@@ -9,11 +9,13 @@ export function EstablishedPropertyModule() {
   const { current, setAppState } = useAppStore();
   const { establishedProperty, visaStatus } = current;
 
-  // Bulletproof Smart Detection (fixes the 190 error completely)
+  // Bulletproof Smart Detection (Synced with Strategy Engine including NZ 444)
   const isTemp = (visa?: string) => {
     if (!visa) return false;
     const v = visa.toLowerCase();
-    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820');
+    const isPermanent = v.includes('citizen') || v.includes('pr') || v.includes('permanent') || 
+                        v.includes('189') || v.includes('190') || v.includes('801') || v.includes('820') ||
+                        v.includes('444') || v.includes('nz') || v.includes('new zealand');
     return !isPermanent;
   };
   

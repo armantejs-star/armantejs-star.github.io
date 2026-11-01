@@ -22,36 +22,36 @@ export type AppState = ScenarioState & {
 
 const INITIAL_STATE: AppState = {
   visaStatus: {
-    applicant1: { visa: "491", isFirstHomeBuyer: true },
+    applicant1: { visa: "Citizen", isFirstHomeBuyer: false },
     isJointPurchase: false,
   },
   property: {
-    landPrice: 350000,
-    buildPrice: 300000,
-    siteWorks: 15000,
+    landPrice: 0,
+    buildPrice: 0,
+    siteWorks: 0,
     soilClassificationRisk: "Unknown",
     nathers7StarUpgrade: 0,
   },
   expectedPRWaitMonths: 12,
   visaFailureRisk: false,
   
-  applicant1Income: 80000,
-  applicant2Income: 40000,
-  monthlyDebts: 500,
-  cashDeposit: 150000,
+  applicant1Income: 0,
+  applicant2Income: 0,
+  monthlyDebts: 0,
+  cashDeposit: 0,
   
   preBuildDelayMonths: 0,
   builderEscalationPct: 6.0,
   contingencyPct: 10,
-  postBuildSetup: 10000,
+  postBuildSetup: 0,
   
-  conveyancingFees: 2500,
+  conveyancingFees: 0,
   overseasFxMarginPct: 1.5,
   
-  currentMonthlyRent: 2200,
-  councilRatesYearly: 3200,
-  insuranceYearly: 1500,
-  maintenanceMonthly: 100,
+  currentMonthlyRent: 0,
+  councilRatesYearly: 0,
+  insuranceYearly: 0,
+  maintenanceMonthly: 0,
   
   propertyGrowthPct: 5.0,
   etfReturnPct: 7.0,
@@ -59,7 +59,7 @@ const INITIAL_STATE: AppState = {
   clientName: '',
   isSaFhbEligible: false,
   buildDurationMonths: 9,
-  turnkeyAllowance: 15000,
+  turnkeyAllowance: 0,
   
   loanTermYears: 30,
   repaymentType: 'PI',
@@ -67,9 +67,9 @@ const INITIAL_STATE: AppState = {
   // --- NEW DEFAULTS FOR ESTABLISHED MODE ---
   activeView: 'build', // Defaults to the current working mode
   establishedProperty: {
-    purchasePrice: 650000,
+    purchasePrice: 0,
     strataYearly: 0,
-    renovationBuffer: 10000,
+    renovationBuffer: 0,
     settlementDays: 30,
   },
 };
