@@ -26,25 +26,38 @@ export function CapitalAllocationChart() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. TAXES & FIRB
-  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
-  const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
-  
+  // 2. DETECT VISAS & MIXED COUPLES (Smart Logic Synced with Strategy Engine)
+  const isTemp = (visa?: string) => {
+    if (!visa) return false;
+    const permanentVisas = ['Citizen', 'PR', 'Permanent Resident', 'Subclass 189', 'Subclass 190', 'Subclass 801', 'Subclass 820'];
+    return !permanentVisas.includes(visa);
+  };
+
+  const a1Temp = isTemp(visaStatus?.applicant1?.visa);
+  const a2Temp = visaStatus?.applicant2?.visa ? isTemp(visaStatus?.applicant2?.visa) : false;
+
+  const hasTemp = a1Temp || a2Temp;
+  const hasPermanent = (!a1Temp && visaStatus?.applicant1?.visa) || (!a2Temp && visaStatus?.applicant2?.visa);
+  const isMixedCouple = hasTemp && hasPermanent;
+
+  // 3. TAXES & FIRB
   const stampDuty = isBuild ? calculateSaStampDuty(land, isSaFhbEligible) : calculateSaStampDuty(totalPropertyPrice, false); 
   const foreignSurcharge = totalPropertyPrice * calculateEffectiveSurchargeRate(visaStatus);
-  const firbFee = isTemporaryResident ? 15600 : 0;
+  
+  // FIRB Fee waived for mixed couples
+  const firbFee = (hasTemp && !isMixedCouple) ? 15600 : 0;
 
   const standardSetupCosts = isBuild 
-    ? (conveyancingFees || 0) + (postBuildSetup || 0) + (turnkeyAllowance || 0)
-    : (conveyancingFees || 0) + (establishedProperty?.renovationBuffer || 0);
+    ? (conveyancingFees || 0) + (postBuildSetup || 0) + (turnkeyAllowance || 0) + firbFee
+    : (conveyancingFees || 0) + (establishedProperty?.renovationBuffer || 0) + firbFee;
 
-  // 3. SEGMENTS
+  // 4. SEGMENTS
   const segments = [
     { label: isBuild ? 'Land + Build' : 'Property Value', value: totalPropertyPrice, color: 'bg-indigo-500' },
     { label: 'Stamp Duty', value: stampDuty, color: 'bg-emerald-500' },
     { label: 'Foreign Surcharge', value: foreignSurcharge, color: 'bg-amber-500' },
     { label: 'FIRB Fee', value: firbFee, color: 'bg-rose-500' },
-    { label: 'Setup / Buffer', value: standardSetupCosts, color: 'bg-sky-500' }
+    { label: 'Setup / Buffer', value: standardSetupCosts - firbFee, color: 'bg-sky-500' }
   ].filter(s => s.value > 0);
 
   const totalRequired = segments.reduce((sum, s) => sum + s.value, 0);
