@@ -28,7 +28,11 @@ export function StrategyEngine() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. SOUTH AUSTRALIA TAX LEGISLATION
+  // 2. DETECT TEMPORARY RESIDENTS (For FIRB Compliance)
+  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
+  const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
+
+  // 3. TAX & FEDERAL LEGISLATION
   const stampDuty = isBuild 
     ? calculateSaStampDuty(land, isSaFhbEligible)
     : calculateSaStampDuty(totalPropertyPrice, false); 
@@ -36,26 +40,38 @@ export function StrategyEngine() {
   const fhbGrant = (isBuild && isSaFhbEligible) ? 15000 : 0;
   const surchargeRate = calculateEffectiveSurchargeRate(visaStatus);
   const foreignSurcharge = totalPropertyPrice * surchargeRate;
+  
+  // FIRB Application Fee (Approx $15,600 for <$1M properties)
+  const firbFee = isTemporaryResident ? 15600 : 0;
 
-  // 3. SETUP COSTS
+  // 4. SETUP COSTS
   const totalSetupCosts = isBuild
-    ? (conveyancingFees || 0) + (postBuildSetup || 0) + (turnkeyAllowance || 0)
-    : (conveyancingFees || 0) + (establishedProperty?.renovationBuffer || 0);
+    ? (conveyancingFees || 0) + (postBuildSetup || 0) + (turnkeyAllowance || 0) + firbFee
+    : (conveyancingFees || 0) + (establishedProperty?.renovationBuffer || 0) + firbFee;
 
-  // 4. FINAL TOTALS
+  // 5. FINAL TOTALS
   const totalFundsRequired = totalPropertyPrice + stampDuty + foreignSurcharge + totalSetupCosts;
   const targetLoanAmount = Math.max(0, totalFundsRequired - (cashDeposit || 0) - fhbGrant);
   const lvr = totalPropertyPrice > 0 ? (targetLoanAmount / totalPropertyPrice) * 100 : 0;
 
-  // 5. STRATEGIC INFERENCES (With Stricter Visa Logic)
-  const is491 = visaStatus?.applicant1?.visa === '491' || visaStatus?.applicant2?.visa === '491';
+  // 6. STRATEGIC INFERENCES 
   const advice = [];
   
-  // Critical Visa Rule
-  if (!isBuild && is491) {
-    advice.push({ type: 'critical', text: "VISA BLOCKER: 491 Visa holders are heavily restricted from purchasing established properties in SA. This combination is generally unviable." });
+  // Federal Restrictions
+  if (!isBuild && isTemporaryResident) {
+    advice.push({ type: 'critical', text: "FIRB BLOCKER: Temporary residents are heavily restricted from purchasing established properties. This combination is generally unviable." });
   }
 
+  if (isTemporaryResident) {
+    advice.push({ type: 'warning', text: `FIRB Application Fee: A non-refundable fee of $15,600 has been calculated into your setup costs.` });
+  }
+
+  if (isBuild && isTemporaryResident) {
+    advice.push({ type: 'warning', text: "FIRB 4-Year Mandate: Federal law dictates you must complete construction within 4 years of FIRB approval." });
+    advice.push({ type: 'critical', text: "Vacancy Penalty: Once built, leaving the property vacant for >6 months in a year triggers a penalty exactly double the FIRB fee." });
+  }
+
+  // State Allowances & Taxes
   if (isBuild && isSaFhbEligible) {
     advice.push({ type: 'good', text: "SA FHB Advantage Active: You pay $0 Stamp Duty and receive the $15,000 grant." });
   } else if (!isBuild && isSaFhbEligible) {

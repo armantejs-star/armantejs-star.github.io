@@ -9,8 +9,9 @@ export function EstablishedPropertyModule() {
   const { current, setAppState } = useAppStore();
   const { establishedProperty, visaStatus } = current;
 
-  // Detect if either applicant is on a 491 Visa
-  const is491 = visaStatus?.applicant1?.visa === '491' || visaStatus?.applicant2?.visa === '491';
+  // Identify if any applicant is on a Temporary Visa (Not Citizen or PR)
+  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
+  const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
 
   return (
     <Card className="p-6">
@@ -19,13 +20,13 @@ export function EstablishedPropertyModule() {
         <h2 className="text-xl font-bold text-slate-800">Target Established Property</h2>
       </div>
 
-      {is491 && (
+      {isTemporaryResident && (
         <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3">
           <AlertOctagon className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-bold text-xs uppercase tracking-wider text-red-700">Visa Restriction Alert (SA / FIRB)</h3>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-red-700">FIRB Restriction Alert (Established Dwellings)</h3>
             <p className="text-xs mt-1 text-red-900 leading-relaxed font-medium">
-              Based on South Australian state nomination and FIRB guidelines, purchasing an established property on a Subclass 491 visa is generally not a viable pathway. 491 visa holders are strongly restricted to building new or purchasing brand-new construction.
+              Under federal FIRB legislation, temporary residents are strictly restricted from purchasing established dwellings as investment properties. You must build new or purchase brand-new construction to comply with Australian federal law.
             </p>
           </div>
         </div>
