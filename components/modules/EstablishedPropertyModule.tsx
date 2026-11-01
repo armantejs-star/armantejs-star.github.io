@@ -9,8 +9,13 @@ export function EstablishedPropertyModule() {
   const { current, setAppState } = useAppStore();
   const { establishedProperty, visaStatus } = current;
 
-  // Identify if any applicant is on a Temporary Visa (Not Citizen or PR)
-  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
+  // Identify if any applicant is on a Temporary Visa (Smart detection)
+  const isTemp = (visa?: string) => {
+    if (!visa) return false;
+    const permanentVisas = ['Citizen', 'PR', 'Permanent Resident', 'Subclass 189', 'Subclass 190', 'Subclass 801', 'Subclass 820'];
+    return !permanentVisas.includes(visa);
+  };
+  
   const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
 
   return (

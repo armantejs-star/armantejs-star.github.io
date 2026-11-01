@@ -28,21 +28,37 @@ export function StrategyEngine() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  // 2. DETECT TEMPORARY RESIDENTS (For FIRB Compliance)
-  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
-  const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
+  // 2. DETECT VISAS & MIXED COUPLES (Smart Logic)
+  const isTemp = (visa?: string) => {
+    if (!visa) return false;
+    const permanentVisas = ['Citizen', 'PR', 'Permanent Resident', 'Subclass 189', 'Subclass 190', 'Subclass 801', 'Subclass 820'];
+    return !permanentVisas.includes(visa);
+  };
+
+  const a1Visa = visaStatus?.applicant1?.visa;
+  const a2Visa = visaStatus?.applicant2?.visa;
+  
+  const a1Temp = isTemp(a1Visa);
+  const a2Temp = a2Visa ? isTemp(a2Visa) : false;
+
+  const hasTemp = a1Temp || a2Temp;
+  const hasPermanent = (!a1Temp && a1Visa) || (!a2Temp && a2Visa);
+  
+  const isMixedCouple = hasTemp && hasPermanent;
+  const isStrictlyTemp = hasTemp && !hasPermanent;
 
   // 3. TAX & FEDERAL LEGISLATION
   const stampDuty = isBuild 
     ? calculateSaStampDuty(land, isSaFhbEligible)
     : calculateSaStampDuty(totalPropertyPrice, false); 
     
-  const fhbGrant = (isBuild && isSaFhbEligible) ? 15000 : 0;
+  // FHOG requires at least one Citizen/PR
+  const fhbGrant = (isBuild && isSaFhbEligible && hasPermanent) ? 15000 : 0;
   const surchargeRate = calculateEffectiveSurchargeRate(visaStatus);
   const foreignSurcharge = totalPropertyPrice * surchargeRate;
   
-  // FIRB Application Fee (Approx $15,600 for <$1M properties)
-  const firbFee = isTemporaryResident ? 15600 : 0;
+  // FIRB Fee applies to temporary residents, but is WAIVED for mixed couples (joint tenants)
+  const firbFee = (hasTemp && !isMixedCouple) ? 15600 : 0;
 
   // 4. SETUP COSTS
   const totalSetupCosts = isBuild
@@ -57,31 +73,43 @@ export function StrategyEngine() {
   // 6. STRATEGIC INFERENCES 
   const advice = [];
   
-  // Federal Restrictions
-  if (!isBuild && isTemporaryResident) {
-    advice.push({ type: 'critical', text: "FIRB BLOCKER: Temporary residents are heavily restricted from purchasing established properties. This combination is generally unviable." });
+  // Federal Restrictions (FIRB)
+  if (!isBuild && isStrictlyTemp) {
+    advice.push({ type: 'critical', text: "FIRB BLOCKER: Temporary residents are strictly restricted from purchasing established properties. You must build new." });
   }
 
-  if (isTemporaryResident) {
-    advice.push({ type: 'warning', text: `FIRB Application Fee: A non-refundable fee of $15,600 has been calculated into your setup costs.` });
+  if (hasTemp && !isMixedCouple) {
+    advice.push({ type: 'warning', text: "FIRB Application Fee: A non-refundable fee of $15,600 has been calculated into your setup costs." });
+  } else if (isMixedCouple) {
+    advice.push({ type: 'good', text: "Spousal FIRB Exemption: Purchasing jointly with a Citizen/PR spouse completely waives the $15,600 FIRB fee." });
   }
 
-  if (isBuild && isTemporaryResident) {
+  if (isBuild && isStrictlyTemp) {
     advice.push({ type: 'warning', text: "FIRB 4-Year Mandate: Federal law dictates you must complete construction within 4 years of FIRB approval." });
-    advice.push({ type: 'critical', text: "Vacancy Penalty: Once built, leaving the property vacant for >6 months in a year triggers a penalty exactly double the FIRB fee." });
+    advice.push({ type: 'critical', text: "Vacancy Penalty: Once built, leaving the property vacant for >6 months in a year triggers a penalty double the FIRB fee." });
   }
 
-  // State Allowances & Taxes
-  if (isBuild && isSaFhbEligible) {
+  // State Allowances & Taxes (FHOG & Stamp Duty)
+  if (isBuild && isSaFhbEligible && hasPermanent) {
     advice.push({ type: 'good', text: "SA FHB Advantage Active: You pay $0 Stamp Duty and receive the $15,000 grant." });
+  } else if (isBuild && isSaFhbEligible && !hasPermanent) {
+    advice.push({ type: 'warning', text: "FHOG Blocked: SA FHB stamp duty waiver applies, but the $15,000 cash grant requires at least one Citizen/PR." });
   } else if (!isBuild && isSaFhbEligible) {
-    advice.push({ type: 'warning', text: "SA FHB Not Applicable: You selected FHB, but South Australia strictly charges full stamp duty on established homes." });
+    advice.push({ type: 'warning', text: "SA FHB Not Applicable: South Australia strictly charges full stamp duty on established homes." });
   }
 
-  if (lvr > 80) advice.push({ type: 'warning', text: `LMI Triggered: At ${lvr.toFixed(1)}% LVR, you will be required to pay Lenders Mortgage Insurance.` });
-  else if (lvr > 0) advice.push({ type: 'good', text: `Healthy LVR: At ${lvr.toFixed(1)}%, you avoid LMI entirely.` });
+  // Banking & LVR Restrictions
+  if (isStrictlyTemp && lvr > 80) {
+    advice.push({ type: 'critical', text: `LMI BLOCKER: At ${lvr.toFixed(1)}% LVR, LMI is required. Australian LMI providers generally reject temporary residents. You must reduce LVR to 80% maximum.` });
+  } else if (lvr > 80) {
+    advice.push({ type: 'warning', text: `LMI Triggered: At ${lvr.toFixed(1)}% LVR, you will be required to pay Lenders Mortgage Insurance.` });
+  } else if (lvr > 0) {
+    advice.push({ type: 'good', text: `Healthy LVR: At ${lvr.toFixed(1)}%, you avoid LMI entirely.` });
+  }
 
-  if (foreignSurcharge > 0) advice.push({ type: 'warning', text: `Foreign Buyer Surcharge: ${(surchargeRate * 100).toFixed(1)}% applied to the property price.` });
+  if (foreignSurcharge > 0) {
+    advice.push({ type: 'warning', text: `Foreign Buyer Surcharge: ${(surchargeRate * 100).toFixed(1)}% applied to the property price.` });
+  }
 
   return (
     <Card className="p-6 bg-slate-900 text-white shadow-xl">
