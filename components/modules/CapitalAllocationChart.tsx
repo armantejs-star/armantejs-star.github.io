@@ -10,10 +10,13 @@ import { PieChart } from 'lucide-react';
 
 export function CapitalAllocationChart() {
   const { current } = useAppStore();
-  const { activeView, property, establishedProperty, visaStatus, isSaFhbEligible, conveyancingFees, postBuildSetup, turnkeyAllowance } = current;
+  const { 
+    activeView, property, establishedProperty, visaStatus, 
+    isSaFhbEligible, conveyancingFees, postBuildSetup, turnkeyAllowance 
+  } = current;
 
+  // 1. ISOLATE PATHWAYS
   const isBuild = activeView === 'build';
-  
   const land = isBuild ? (property?.landPrice || 0) : 0;
   const build = isBuild ? (property?.buildPrice || 0) : 0;
   const site = isBuild ? (property?.siteWorks || 0) : 0;
@@ -23,19 +26,28 @@ export function CapitalAllocationChart() {
   const totalBuildCost = build + site + nathers + soilBuffer;
   const totalPropertyPrice = isBuild ? (land + totalBuildCost) : (establishedProperty?.purchasePrice || 0);
 
-  const stampDuty = isBuild 
-    ? calculateSaStampDuty(land, isSaFhbEligible)
-    : calculateSaStampDuty(totalPropertyPrice, false);
-    
-  const surchargeRate = calculateEffectiveSurchargeRate(visaStatus);
-  const foreignSurcharge = totalPropertyPrice * surchargeRate;
+  // 2. TAXES & FIRB
+  const isTemp = (visa?: string) => visa && !['Citizen', 'PR', 'Permanent Resident'].includes(visa);
+  const isTemporaryResident = isTemp(visaStatus?.applicant1?.visa) || isTemp(visaStatus?.applicant2?.visa);
+  
+  const stampDuty = isBuild ? calculateSaStampDuty(land, isSaFhbEligible) : calculateSaStampDuty(totalPropertyPrice, false); 
+  const foreignSurcharge = totalPropertyPrice * calculateEffectiveSurchargeRate(visaStatus);
+  const firbFee = isTemporaryResident ? 15600 : 0;
 
-  const totalSetupCosts = isBuild
+  const standardSetupCosts = isBuild 
     ? (conveyancingFees || 0) + (postBuildSetup || 0) + (turnkeyAllowance || 0)
     : (conveyancingFees || 0) + (establishedProperty?.renovationBuffer || 0);
 
-  const totalFunds = totalPropertyPrice + stampDuty + foreignSurcharge + totalSetupCosts;
-  const divisor = totalFunds || 1;
+  // 3. SEGMENTS
+  const segments = [
+    { label: isBuild ? 'Land + Build' : 'Property Value', value: totalPropertyPrice, color: 'bg-indigo-500' },
+    { label: 'Stamp Duty', value: stampDuty, color: 'bg-emerald-500' },
+    { label: 'Foreign Surcharge', value: foreignSurcharge, color: 'bg-amber-500' },
+    { label: 'FIRB Fee', value: firbFee, color: 'bg-rose-500' },
+    { label: 'Setup / Buffer', value: standardSetupCosts, color: 'bg-sky-500' }
+  ].filter(s => s.value > 0);
+
+  const totalRequired = segments.reduce((sum, s) => sum + s.value, 0);
 
   return (
     <Card className="p-6">
@@ -44,36 +56,38 @@ export function CapitalAllocationChart() {
         <h2 className="text-xl font-bold text-slate-800">Capital Allocation</h2>
       </div>
 
-      <div className="w-full h-12 flex rounded-lg overflow-hidden shadow-inner mb-6 bg-slate-100">
-        {isBuild ? (
-          <>
-            <div style={{ width: `${(land / divisor) * 100}%` }} className="bg-sky-500 hover:bg-sky-400 transition-colors border-r border-white/20" title="Land" />
-            <div style={{ width: `${(totalBuildCost / divisor) * 100}%` }} className="bg-emerald-500 hover:bg-emerald-400 transition-colors border-r border-white/20" title="Build" />
-          </>
-        ) : (
-          <div style={{ width: `${(totalPropertyPrice / divisor) * 100}%` }} className="bg-indigo-500 hover:bg-indigo-400 transition-colors border-r border-white/20" title="Property" />
-        )}
-        
-        <div style={{ width: `${(stampDuty / divisor) * 100}%` }} className="bg-amber-500 hover:bg-amber-400 transition-colors border-r border-white/20" title="Stamp Duty" />
-        <div style={{ width: `${(foreignSurcharge / divisor) * 100}%` }} className="bg-red-500 hover:bg-red-400 transition-colors border-r border-white/20" title="Foreign Surcharge" />
-        <div style={{ width: `${(totalSetupCosts / divisor) * 100}%` }} className="bg-slate-500 hover:bg-slate-400 transition-colors" title="Setup & Fees" />
-      </div>
+      {totalRequired === 0 ? (
+        <div className="h-12 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold text-slate-400">
+          Awaiting Data...
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {/* Segmented Bar */}
+          <div className="h-12 flex rounded-xl overflow-hidden shadow-inner border border-slate-200/50">
+            {segments.map((s, idx) => (
+              <div 
+                key={idx} 
+                style={{ width: `${(s.value / totalRequired) * 100}%` }}
+                className={`${s.color} h-full transition-all duration-700 ease-out border-r border-white/20 last:border-0 hover:opacity-90`}
+                title={`${s.label}: $${s.value.toLocaleString()}`}
+              />
+            ))}
+          </div>
 
-      <div className="grid grid-cols-2 text-sm gap-y-3 font-medium text-slate-600">
-        {isBuild ? (
-          <>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 bg-sky-500 rounded-sm" /> Land Price</div>
-            <div className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-sm" /> Construction</div>
-          </>
-        ) : (
-          <div className="flex items-center gap-2 col-span-2"><div className="w-3 h-3 bg-indigo-500 rounded-sm" /> Property Price</div>
-        )}
-        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-amber-500 rounded-sm" /> Stamp Duty</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 bg-slate-500 rounded-sm" /> Setup & Buffers</div>
-        {foreignSurcharge > 0 && (
-          <div className="flex items-center gap-2 col-span-2"><div className="w-3 h-3 bg-red-500 rounded-sm" /> Foreign Surcharge</div>
-        )}
-      </div>
+          {/* Legend */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {segments.map((s, idx) => (
+              <div key={idx} className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                <div className={`w-3 h-3 rounded-full ${s.color} shadow-sm`} />
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 leading-none mb-1">{s.label}</span>
+                  <span className="text-sm font-black text-slate-900 leading-none">${Math.round(s.value).toLocaleString()}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
