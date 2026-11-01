@@ -47,8 +47,15 @@ export function StrategyEngine() {
   const targetLoanAmount = Math.max(0, totalFundsRequired - (cashDeposit || 0) - fhbGrant);
   const lvr = totalPropertyPrice > 0 ? (targetLoanAmount / totalPropertyPrice) * 100 : 0;
 
-  // 5. STRATEGIC INFERENCES
+  // 5. STRATEGIC INFERENCES (With Stricter Visa Logic)
+  const is491 = visaStatus?.applicant1?.visa === '491' || visaStatus?.applicant2?.visa === '491';
   const advice = [];
+  
+  // Critical Visa Rule
+  if (!isBuild && is491) {
+    advice.push({ type: 'critical', text: "VISA BLOCKER: 491 Visa holders are heavily restricted from purchasing established properties in SA. This combination is generally unviable." });
+  }
+
   if (isBuild && isSaFhbEligible) {
     advice.push({ type: 'good', text: "SA FHB Advantage Active: You pay $0 Stamp Duty and receive the $15,000 grant." });
   } else if (!isBuild && isSaFhbEligible) {
@@ -88,12 +95,14 @@ export function StrategyEngine() {
           <div className="space-y-3">
             {advice.map((item, idx) => (
               <div key={idx} className="flex items-start gap-2 text-sm">
-                {item.type === 'good' ? (
+                {item.type === 'critical' ? (
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                ) : item.type === 'good' ? (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 ) : (
                   <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 )}
-                <span className="text-slate-300">{item.text}</span>
+                <span className={item.type === 'critical' ? 'text-red-300 font-bold' : 'text-slate-300'}>{item.text}</span>
               </div>
             ))}
           </div>

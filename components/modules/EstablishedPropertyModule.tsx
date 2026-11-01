@@ -3,76 +3,88 @@
 import React from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Card } from '@/components/ui/Card';
-import { CurrencyInput } from '@/components/ui/CurrencyInput';
-import { Tooltip } from '@/components/ui/Tooltip';
-import { AlertTriangle, Home } from 'lucide-react';
+import { Home, AlertOctagon } from 'lucide-react';
 
 export function EstablishedPropertyModule() {
   const { current, setAppState } = useAppStore();
-  const { establishedProperty, isSaFhbEligible } = current;
+  const { establishedProperty, visaStatus } = current;
 
-  const updateEstablished = (key: string, value: number) => {
-    setAppState({
-      establishedProperty: {
-        ...establishedProperty,
-        [key]: value
-      }
-    });
-  };
+  // Detect if either applicant is on a 491 Visa
+  const is491 = visaStatus?.applicant1?.visa === '491' || visaStatus?.applicant2?.visa === '491';
 
   return (
-    <Card className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-          <Home className="w-5 h-5 text-slate-500" />
-          Established Property Details
-        </h2>
-        <Tooltip text="Enter the baseline costs for buying an existing home. Remember to include strata fees for townhouses or apartments." />
+    <Card className="p-6">
+      <div className="flex items-center gap-2 mb-6">
+        <Home className="w-5 h-5 text-slate-500" />
+        <h2 className="text-xl font-bold text-slate-800">Target Established Property</h2>
       </div>
 
-      {/* DYNAMIC WARNING ABOUT FHB & STAMP DUTY */}
-      {isSaFhbEligible && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3 text-amber-800 shadow-sm">
-          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
-          <div className="text-sm">
-            <p className="font-bold">SA First Home Buyer Alert</p>
-            <p className="mt-1 opacity-90">
-              South Australia&apos;s $15,000 First Home Owner Grant and Stamp Duty Abolition apply <strong className="text-amber-900">strictly to new builds</strong>. By purchasing an established property, your client will be legally liable for standard stamp duty on the full purchase price.
+      {is491 && (
+        <div className="mb-6 bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3">
+          <AlertOctagon className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+          <div>
+            <h3 className="font-bold text-xs uppercase tracking-wider text-red-700">Visa Restriction Alert (SA / FIRB)</h3>
+            <p className="text-xs mt-1 text-red-900 leading-relaxed font-medium">
+              Based on South Australian state nomination and FIRB guidelines, purchasing an established property on a Subclass 491 visa is generally not a viable pathway. 491 visa holders are strongly restricted to building new or purchasing brand-new construction.
             </p>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <CurrencyInput
-          label="Target Purchase Price"
-          value={establishedProperty.purchasePrice || 0}
-          onChange={(v) => updateEstablished('purchasePrice', v)}
-        />
-
-        <CurrencyInput
-          label="Immediate Renovation Buffer"
-          value={establishedProperty.renovationBuffer || 0}
-          onChange={(v) => updateEstablished('renovationBuffer', v)}
-        />
-
-        <CurrencyInput
-          label="Yearly Strata / Body Corp ($)"
-          value={establishedProperty.strataYearly || 0}
-          onChange={(v) => updateEstablished('strataYearly', v)}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium text-slate-700">Target Purchase Price</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+            <input
+              type="number"
+              value={establishedProperty?.purchasePrice || ''}
+              onChange={(e) => setAppState({ establishedProperty: { ...establishedProperty, purchasePrice: Number(e.target.value) }})}
+              className="w-full pl-7 pr-3 py-2 bg-slate-100 border-none rounded-lg text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. 650000"
+            />
+          </div>
+        </div>
+        
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium text-slate-700">Immediate Repair Buffer</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+            <input
+              type="number"
+              value={establishedProperty?.renovationBuffer || ''}
+              onChange={(e) => setAppState({ establishedProperty: { ...establishedProperty, renovationBuffer: Number(e.target.value) }})}
+              className="w-full pl-7 pr-3 py-2 bg-slate-100 border-none rounded-lg text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. 15000"
+            />
+          </div>
+        </div>
 
         <div className="flex flex-col space-y-1">
-          <label className="text-sm font-medium text-slate-700">Settlement Timeframe</label>
-          <select 
-            value={establishedProperty.settlementDays}
-            onChange={(e) => updateEstablished('settlementDays', Number(e.target.value))}
-            className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-white text-slate-900 h-10"
+          <label className="text-sm font-medium text-slate-700">Yearly Strata / Body Corp</label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+            <input
+              type="number"
+              value={establishedProperty?.strataYearly || ''}
+              onChange={(e) => setAppState({ establishedProperty: { ...establishedProperty, strataYearly: Number(e.target.value) }})}
+              className="w-full pl-7 pr-3 py-2 bg-slate-100 border-none rounded-lg text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500"
+              placeholder="Leave blank if Torrens Title"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col space-y-1">
+          <label className="text-sm font-medium text-slate-700">Expected Settlement</label>
+          <select
+            value={establishedProperty?.settlementDays || 30}
+            onChange={(e) => setAppState({ establishedProperty: { ...establishedProperty, settlementDays: Number(e.target.value) }})}
+            className="w-full px-3 py-2 bg-slate-100 border-none rounded-lg text-slate-900 font-bold focus:ring-2 focus:ring-indigo-500"
           >
-            <option value={30}>30 Days (Standard)</option>
+            <option value={30}>30 Days</option>
             <option value={45}>45 Days</option>
-            <option value={60}>60 Days (Extended)</option>
-            <option value={90}>90 Days (Subject to Sale)</option>
+            <option value={60}>60 Days</option>
+            <option value={90}>90 Days</option>
           </select>
         </div>
       </div>
